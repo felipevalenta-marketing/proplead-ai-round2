@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PropLead AI — Agent Review</title>
+  <style>
+    :root{--navy:#14213d;--ink:#243047;--muted:#64748b;--line:#dbe3ee;--bg:#f4f7fb;--blue:#3157d5;--blue2:#eef2ff;--green:#11835b;--green2:#e9f8f2;--amber:#a45c00;--amber2:#fff7e5;--red:#b42318;--red2:#fff1f0;--white:#fff}
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif}
+    header{background:var(--navy);color:white;padding:18px 32px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+    .brand{display:flex;align-items:center;gap:12px}.mark{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,#5f7cff,#31c48d);display:grid;place-items:center;font-weight:900}.brand h1{font-size:19px;margin:0}.brand small{display:block;color:#bdc9df;margin-top:2px}.mode{font-size:12px;border:1px solid #ffffff38;border-radius:999px;padding:7px 10px;color:#dbe5ff}
+    main{max-width:1320px;margin:22px auto;padding:0 22px 42px;display:grid;grid-template-columns:390px 1fr;gap:20px}.card{background:white;border:1px solid var(--line);border-radius:15px;box-shadow:0 8px 24px rgba(30,52,86,.06)}
+    .input-card{padding:22px;align-self:start;position:sticky;top:18px}.workspace{display:grid;gap:16px}.panel{padding:20px}.panel-head{display:flex;justify-content:space-between;gap:15px;align-items:start;margin-bottom:14px}
+    h2{font-size:17px;margin:0;color:var(--navy)}h3{font-size:14px;margin:0 0 9px;color:var(--navy)}p{color:var(--muted);line-height:1.5;margin:7px 0 14px}.eyebrow{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--blue);font-weight:800;margin-bottom:7px}
+    label{font-size:12px;font-weight:750;color:#44516a;display:block;margin:13px 0 6px}select,textarea,input{width:100%;border:1px solid var(--line);border-radius:9px;padding:11px 12px;background:white;color:var(--ink);font:inherit}textarea{min-height:180px;resize:vertical;line-height:1.5}select:focus,textarea:focus{outline:3px solid #3157d51b;border-color:#7990df}
+    button{font:inherit;font-weight:750;border:0;border-radius:9px;padding:11px 14px;cursor:pointer}.primary{width:100%;margin-top:13px;background:var(--blue);color:white}.primary:hover{background:#2849b7}.secondary{background:#edf1f7;color:#33415a}.approve{background:var(--green);color:white}.reject{background:#f7e8e7;color:var(--red)}
+    .samples{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px}.sample{font-size:11px;padding:8px;background:#f4f6fa;color:#526079;text-align:left}.sample:hover{background:#e9eef7}
+    .summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.stat{padding:14px;border-radius:11px;background:#f7f9fc;border:1px solid #e5eaf1}.stat span{font-size:11px;color:var(--muted);display:block;margin-bottom:5px}.stat strong{font-size:15px;color:var(--navy)}
+    .pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:6px 10px;font-size:12px;font-weight:800}.good{background:var(--green2);color:var(--green)}.warn{background:var(--amber2);color:var(--amber)}.risk{background:var(--red2);color:var(--red)}.info{background:var(--blue2);color:var(--blue)}
+    .two{display:grid;grid-template-columns:1fr 1fr;gap:16px}.fields{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.field{padding:12px;border:1px solid #e4e9f1;border-radius:10px;background:#fbfcfe;min-height:70px}.field span{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);display:block;margin-bottom:6px}.field strong{font-size:13px;color:var(--navy);overflow-wrap:anywhere}.missing{color:var(--amber)!important}
+    .scorebar{height:9px;background:#e7ecf4;border-radius:99px;overflow:hidden;margin:8px 0}.scorebar div{height:100%;background:linear-gradient(90deg,#3157d5,#31c48d);border-radius:99px}.breakdown{display:grid;grid-template-columns:1fr 1fr;gap:5px 14px;font-size:12px;color:var(--muted)}.breakdown div{display:flex;justify-content:space-between;border-bottom:1px dotted #d9e0ea;padding:5px 0}
+    .property{border:1px solid #e1e7ef;border-radius:11px;padding:14px;margin-top:9px;display:grid;grid-template-columns:1fr auto;gap:12px}.property h3{font-size:14px}.property p{font-size:12px;margin:5px 0}.price{font-weight:850;color:var(--blue);white-space:nowrap}.reason{display:flex;flex-wrap:wrap;gap:5px}.reason span{font-size:10px;background:#f0f3f8;border-radius:999px;padding:4px 7px;color:#536077}
+    .draft{border-left:4px solid var(--blue);background:#f6f8ff;border-radius:9px;padding:15px;line-height:1.6;color:#35425a;min-height:85px}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}.notice{padding:12px;border-radius:9px;background:var(--amber2);color:#744800;font-size:12px;line-height:1.45}.empty{padding:22px;text-align:center;border:1px dashed #ccd5e1;border-radius:10px;color:var(--muted)}
+    .audit{font-size:11px;color:var(--muted);display:flex;gap:14px;flex-wrap:wrap}.hidden{display:none}.decision{margin-top:10px;font-size:12px;font-weight:750;color:var(--green)}
+    @media(max-width:980px){main{grid-template-columns:1fr}.input-card{position:static}.summary{grid-template-columns:repeat(2,1fr)}}@media(max-width:620px){header{padding:16px 18px}.two,.fields{grid-template-columns:1fr}.summary{grid-template-columns:1fr 1fr}.samples{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand"><div class="mark">P</div><div><h1>PropLead AI</h1><small>Multilingual lead qualification for small real-estate teams</small></div></div>
+    <div class="mode">ROUND 2 MVP · SYNTHETIC DATA</div>
+  </header>
+  <main>
+    <aside class="card input-card">
+      <div class="eyebrow">New enquiry</div><h2>Lead intake</h2>
+      <p>Simulate a message from any supported channel. PropLead preserves the original text and standardises the source metadata.</p>
+      <label for="channel">Source channel</label>
+      <select id="channel"><option value="whatsapp">WhatsApp</option><option value="email">Email</option><option value="web_form">Web form</option><option value="property_portal">Property portal</option><option value="social">Social media</option><option value="manual">Manual entry</option></select>
+      <label for="message">Original message</label>
+      <textarea id="message"></textarea>
+      <div class="samples">
+        <button class="sample" data-sample="qualified">Qualified · EN</button>
+        <button class="sample" data-sample="missing">Missing budget · DE</button>
+        <button class="sample" data-sample="spanish">Qualified · ES</button>
+        <button class="sample" data-sample="edge">Mixed language</button>
+      </div>
+      <button id="analyse" class="primary">Analyse lead</button>
+      <p style="font-size:11px;margin-bottom:0">No message is sent automatically. Every outcome requires agent review.</p>
+    </aside>
+
+    <div class="workspace">
+      <section class="card panel">
+        <div class="panel-head"><div><div class="eyebrow">Decision support</div><h2>Lead overview</h2></div><span id="statusPill" class="pill info">Waiting</span></div>
+        <div class="summary">
+          <div class="stat"><span>Readiness score</span><strong id="score">—</strong></div>
+          <div class="stat"><span>Priority</span><strong id="priority">—</strong></div>
+          <div class="stat"><span>Confidence</span><strong id="confidence">—</strong></div>
+          <div class="stat"><span>Language</span><strong id="language">—</strong></div>
+        </div>
+      </section>
+
+      <section class="card panel">
+        <div class="panel-head"><div><div class="eyebrow">Extracted evidence</div><h2>Structured lead</h2></div><span id="channelPill" class="pill info">—</span></div>
+        <div id="fields" class="fields"><div class="empty" style="grid-column:1/-1">Analyse an enquiry to create the structured lead record.</div></div>
+      </section>
+
+      <section class="two">
+        <div class="card panel"><div class="eyebrow">Transparent logic</div><h2>Score breakdown</h2><div class="scorebar"><div id="scoreFill" style="width:0"></div></div><div id="breakdown" class="breakdown"></div></div>
+        <div class="card panel"><div class="eyebrow">Safety controls</div><h2>Missing data & flags</h2><div id="controls" class="empty">No analysis yet.</div></div>
+      </section>
+
+      <section class="card panel">
+        <div class="panel-head"><div><div class="eyebrow">Current catalogue only</div><h2>Compatible properties</h2></div><span id="matchCount" class="pill info">0 matches</span></div>
+        <div id="matches" class="empty">Matching runs only after the qualification gate.</div>
+      </section>
+
+      <section class="card panel">
+        <div class="panel-head"><div><div class="eyebrow">Human approval required</div><h2>Response draft</h2></div><span class="pill warn">Not sent</span></div>
+        <div id="draft" class="draft">The response or clarification question will appear here.</div>
+        <div class="actions"><button class="approve" data-decision="Approved">Approve</button><button class="secondary" data-decision="Edited">Edit before approval</button><button class="reject" data-decision="Rejected">Reject</button><button class="secondary" data-decision="Escalated">Escalate</button></div>
+        <div id="decision" class="decision"></div>
+      </section>
+
+      <section class="card panel audit"><span>✓ Original message preserved</span><span>✓ Deterministic score</span><span>✓ Availability check</span><span>✓ Human review</span><span>✓ No automatic sending</span></section>
+    </div>
+  </main>
+  <script src="catalogue.js"></script><script src="app.js"></script>
+  <script>
+    const SAMPLES={
+      qualified:{channel:'email',text:"Hi, I'm looking for a 2-bedroom apartment in Palma with a budget of €800,000. I would like to buy within the next three months."},
+      missing:{channel:'whatsapp',text:'Ich möchte ein Haus in der Nähe von Sóller kaufen. Das Budget weiß ich noch nicht.'},
+      spanish:{channel:'web_form',text:"Busco un apartamento de dos habitaciones en Cala d'Or frente al mar. Mi presupuesto máximo es de 300.000 euros."},
+      edge:{channel:'whatsapp',text:'Hola, looking for un apartamento en Palma, dos bedrooms, presupuesto sobre 600k y compra pronto.'}
+    };
+    const $=id=>document.getElementById(id); let current=null;
+    const money=value=>value?new Intl.NumberFormat('en-GB',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(value):'Missing';
+    const display=value=>value===null||value===undefined||value===''?'Missing':Array.isArray(value)?(value.join(', ')||'Missing'):String(value).replaceAll('_',' ');
+    function setSample(name){$('channel').value=SAMPLES[name].channel;$('message').value=SAMPLES[name].text}
+    document.querySelectorAll('[data-sample]').forEach(button=>button.addEventListener('click',()=>setSample(button.dataset.sample)));
+    setSample('qualified');
+    function render(result){
+      current=result;$('decision').textContent='';$('score').textContent=`${result.score}/100`;$('priority').textContent=result.priority.toUpperCase();$('confidence').textContent=result.confidence.toUpperCase();$('language').textContent=({en:'English',es:'Spanish',de:'German'})[result.language];
+      const status=result.status==='needs_information'?'Needs information':'Awaiting agent approval';$('statusPill').textContent=status;$('statusPill').className=`pill ${result.status==='needs_information'?'warn':'good'}`;$('channelPill').textContent=result.source_channel.replaceAll('_',' ');
+      const fieldData=[['Budget',money(result.budget_eur)],['Location',display(result.locations)],['Property type',display(result.property_type)],['Minimum bedrooms',display(result.min_bedrooms)],['Timeline (months)',display(result.timeline_months)],['Purpose',display(result.purpose)],['Financing',display(result.financing_status)],['Must-have features',display(result.must_have_features)],['Qualification',display(result.qualification_status)]];
+      $('fields').innerHTML=fieldData.map(([label,value])=>`<div class="field"><span>${label}</span><strong class="${value==='Missing'?'missing':''}">${value}</strong></div>`).join('');
+      $('scoreFill').style.width=`${result.score}%`;$('breakdown').innerHTML=Object.entries(result.score_breakdown||result.breakdown).map(([field,points])=>`<div><span>${field.replaceAll('_',' ')}</span><strong>${points}</strong></div>`).join('');
+      const controls=[];if(result.missing_fields.length)controls.push(`<div class="notice"><strong>Missing:</strong> ${result.missing_fields.map(x=>x.replaceAll('_',' ')).join(', ')}</div>`);if(result.risk_flags.length)controls.push(`<div class="notice" style="margin-top:8px;background:var(--red2);color:var(--red)"><strong>Review flags:</strong> ${result.risk_flags.map(x=>x.replaceAll('_',' ')).join(', ')}</div>`);if(!controls.length)controls.push('<span class="pill good">No blocking issue detected</span>');$('controls').className='';$('controls').innerHTML=controls.join('');
+      $('matchCount').textContent=`${result.matches.length} match${result.matches.length===1?'':'es'}`;$('matches').className='';$('matches').innerHTML=result.matches.length?result.matches.map(p=>`<div class="property"><div><h3>${p.id} · ${p.title}</h3><p>${p.location} · ${p.type} · ${p.bedrooms} bedrooms<br>${p.key_features.join(' · ')}</p><div class="reason">${p.match_reason.map(reason=>`<span>${reason}</span>`).join('')}</div></div><div class="price">${money(p.price_eur)}</div></div>`).join(''):'<div class="empty">No property returned. The system does not invent or expose an unverified match.</div>';
+      $('draft').textContent=result.draft_reply;
+    }
+    $('analyse').addEventListener('click',()=>{try{render(PropLead.processLead({source_channel:$('channel').value,original_text:$('message').value,consent_status:'synthetic_demo'},window.PROPLEAD_CATALOGUE,{reference_date:'2026-10-03'}))}catch(error){alert(error.message)}});
+    document.querySelectorAll('[data-decision]').forEach(button=>button.addEventListener('click',()=>{$('decision').textContent=current?`Review outcome recorded: ${button.dataset.decision}. No message was sent.`:'Analyse a lead before recording a decision.'}));
+    $('analyse').click();
+  </script>
+</body>
+</html>

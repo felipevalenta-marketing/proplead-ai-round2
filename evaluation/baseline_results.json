@@ -1,0 +1,201 @@
+{
+  "run_name": "baseline_rules_v2",
+  "run_at": "2026-10-03",
+  "dataset": "dataset_seed.jsonl",
+  "data_origin": "synthetic",
+  "metrics": {
+    "cases": 18,
+    "field_accuracy_pct": 100,
+    "language_accuracy_pct": 100,
+    "exact_matching_accuracy_pct": 100,
+    "escalation_accuracy_pct": 100,
+    "human_gate_pct": 100
+  },
+  "limitations": [
+    "Synthetic benchmark only",
+    "Rules-based extraction baseline",
+    "Does not prove live conversion or production accuracy"
+  ],
+  "cases": [
+    {
+      "case_id": "EN-01",
+      "language": "en",
+      "field_accuracy": 1,
+      "matching_pass": true,
+      "escalation_pass": true,
+      "human_gate_pass": true,
+      "status": "awaiting_agent_approval",
+      "priority": "hot"
+    },
+    {
+      "case_id": "EN-02",
+      "language": "en",
+      "field_accuracy": 1,
+      "matching_pass": true,
+      "escalation_pass": true,
+      "human_gate_pass": true,
+      "status": "awaiting_agent_approval",
+      "priority": "warm"
+    },
+    {
+      "case_id": "EN-03",
+      "language": "en",
+      "field_accuracy": 1,
+      "matching_pass": true,
+      "escalation_pass": true,
+      "human_gate_pass": true,
+      "status": "awaiting_agent_approval",
+      "priority": "warm"
+    },
+    {
+      "case_id": "EN-04",
+      "language": "en",
+      "field_accuracy": 1,
+      "matching_pass": true,
+      "escalation_pass": true,
+      "human_gate_pass": true,
+      "status": "needs_information",
+      "priority": "review"
+    },
+    {
+      "case_id": "EN-05",
+      "language": "en",
+      "field_accuracy": 1,
+      "matching_pass": true,
+      "escalation_pass": true,
+      "human_gate_pass": true,
+      "status": "awaiting_agent_approval",
+      "priority": "review"
+    },
+    {
+      "case_id": "EN-06",
+      "language": "en",
+      "field_accuracy": 1,
+      "matching_pass": true,
+      "escalation_pass": true,
+      "human_gate_pass": true,
+      "status": "needs_information",
+      "priority": "review"
+    },
+    {
+      "case_id": "DE-01",
+      "language": "de",
+      "field_accuracy": 1,
+      "matching_pass": true,
+      "escalation_pass": true,
+      "human_gate_pass": true,
+      "status": "awaiting_agent_approval",
+      "priority": "warm"
+    },
+    {
+      "case_id": "DE-02",
+      "language": "de",
+      "field_accuracy": 1,
+      "matching_pass": true,
+      "escalation_pass": true,
+      "human_gate_pass": true,
+      "status": "awaiting_agent_approval",
+      "priority": "warm"
+    },
+    {
+      "case_id": "DE-03",
+      "language": "de",
+      "field_accuracy": 1,
+      "matching_pass": true,
+      "escalation_pass": true,
+      "human_gate_pass": true,
+      "status": "needs_information",
+      "priority": "cold"
+    },
+    {
+      "case_id": "DE-04",
+      "language": "de",
+      "field_accuracy": 1,
+      "matching_pass": true,
+      "escalation_pass": true,
+      "human_gate_pass": true,
+      "status": "awaiting_agent_approval",
+      "priority": "warm"
+    },
+    {
+      "case_id": "DE-05",
+      "language": "de",
+      "field_accuracy": 1,
+      "matching_pass": true,
+      "escalation_pass": true,
+      "human_gate_pass": true,
+      "status": "needs_information",
+      "priority": "review"
+    },
+    {
+      "case_id": "DE-06",
+      "language": "de",
+      "field_accuracy": 1,
+      "matching_pass": true,
+      "escalation_pass": true,
+      "human_gate_pass": true,
+      "status": "needs_information",
+      "priority": "review"
+    },
+    {
+      "case_id": "ES-01",
+      "language": "es",
+      "field_accuracy": 1,
+      "matching_pass": true,
+      "escalation_pass": true,
+      "human_gate_pass": true,
+      "status": "awaiting_agent_approval",
+      "priority": "warm"
+    },
+    {
+      "case_id": "ES-02",
+      "language": "es",
+      "field_accuracy": 1,
+      "matching_pass": true,
+      "escalation_pass": true,
+      "human_gate_pass": true,
+      "status": "awaiting_agent_approval",
+      "priority": "warm"
+    },
+    {
+      "case_id": "ES-03",
+      "language": "es",
+      "field_accuracy": 1,
+      "matching_pass": true,
+      "escalation_pass": true,
+      "human_gate_pass": true,
+      "status": "needs_information",
+      "priority": "cold"
+    },
+    {
+      "case_id": "ES-04",
+      "language": "es",
+      "field_accuracy": 1,
+      "matching_pass": true,
+      "escalation_pass": true,
+      "human_gate_pass": true,
+      "status": "awaiting_agent_approval",
+      "priority": "warm"
+    },
+    {
+      "case_id": "ES-05",
+      "language": "es",
+      "field_accuracy": 1,
+      "matching_pass": true,
+      "escalation_pass": true,
+      "human_gate_pass": true,
+      "status": "needs_information",
+      "priority": "review"
+    },
+    {
+      "case_id": "ES-06",
+      "language": "es",
+      "field_accuracy": 1,
+      "matching_pass": true,
+      "escalation_pass": true,
+      "human_gate_pass": true,
+      "status": "awaiting_agent_approval",
+      "priority": "review"
+    }
+  ]
+}
