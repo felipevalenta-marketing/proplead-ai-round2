@@ -1,7 +1,7 @@
-# PropLead â€” Ironhack Capstone Round 2
+# PropLead ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Ironhack Capstone Round 2
 
 **Consultant:** Carlos Felipe Valencia  
-**Scenario:** Chleo Realty Mallorca, a micro real estate agency with 1â€“9 employees  
+**Scenario:** Chleo Realty Mallorca, a micro real estate agency with 1ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“9 employees
 **Decision after Round 1:** KEEP  
 **Primary use case:** Multilingual lead qualification and property matching
 
@@ -34,6 +34,7 @@ One free-text enquiry enters the system. The MVP:
 - Both LangSmith experiments were executed.
 - The structured OpenAI experiment achieved 100% language accuracy, 100% mandatory human-review compliance, 94.4% no-critical-fabrication performance, 92.4% explicit-field accuracy and 61.1% escalation accuracy.
 - Current improvement priorities are unseen-query property matching and deterministic escalation.
+- Deterministic matching now handles unseen budget formats, bedroom phrasing, location spellings and must-have feature filters.
 - Synthetic data is documented, and no response is sent without human approval.
 - Round 1 peer feedback (4.00 / 5.00) translated into scope, controls and regression criteria.
 

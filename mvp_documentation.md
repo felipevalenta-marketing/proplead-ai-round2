@@ -29,6 +29,8 @@ node evaluation/run_baseline.js
 - Same-language response or clarification drafting.
 - Approve, edit, reject and escalate review outcomes.
 - No automatic outbound sending.
+- Deterministic multilingual matching normalises accents, apostrophes, location spellings, budget formats, bedroom phrasing and must-have feature concepts before filtering and ranking.
+- `data/properties.csv` is the source of truth for the browser catalogue, and `mvp/sync_catalogue.js` validates `mvp/catalogue.js` against it.
 
 ## Minimum matching gate
 
@@ -60,7 +62,7 @@ A property can be returned only when:
 |---|---:|
 | Multilingual synthetic cases | 18 |
 | Languages | 3 |
-| Automated tests | 27/27 passing |
+| Automated tests | 57/57 passing |
 | Explicit-field accuracy on current dataset | 100% |
 | Language accuracy on current dataset | 100% |
 | Exact expected matching on current dataset | 100% |
@@ -91,7 +93,4 @@ These figures describe the documented synthetic benchmark only. They do not prov
 - Authentication and production hosting
 - Sending approved messages
 
-## Next technical step
-
-Wrap the current extraction interface with a structured LLM implementation, trace both configurations in LangSmith and compare them on the same dataset without removing deterministic qualification, matching or human-review controls.
-
+## Next technical step\n\nKeep the deterministic browser MVP as the baseline while any future structured-LLM work stays behind the same qualification, matching and human-review controls.
