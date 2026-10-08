@@ -1,7 +1,7 @@
-# PropLead ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Ironhack Capstone Round 2
+# PropLead ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â Ironhack Capstone Round 2
 
 **Consultant:** Carlos Felipe Valencia  
-**Scenario:** Chleo Realty Mallorca, a micro real estate agency with 1ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“9 employees
+**Scenario:** Chleo Realty Mallorca, a micro real estate agency with 1ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œ9 employees
 **Decision after Round 1:** KEEP  
 **Primary use case:** Multilingual lead qualification and property matching
 
@@ -33,14 +33,14 @@ One free-text enquiry enters the system. The MVP:
 - The 18-case multilingual dataset was created and validated.
 - Both LangSmith experiments were executed.
 - The structured OpenAI experiment achieved 100% language accuracy, 100% mandatory human-review compliance, 94.4% no-critical-fabrication performance, 92.4% explicit-field accuracy and 61.1% escalation accuracy.
+- Hybrid structured_extractor_v2 policy tests now pass locally without calling OpenAI.
 - Current improvement priorities are unseen-query property matching and deterministic escalation.
-- Deterministic matching now handles unseen budget formats, bedroom phrasing, location spellings and must-have feature filters.
 - Synthetic data is documented, and no response is sent without human approval.
 - Round 1 peer feedback (4.00 / 5.00) translated into scope, controls and regression criteria.
 
 ## Important implementation boundary
 
-The Round 1 n8n workflow and browser demo remain the validated baseline. LLM extraction, LangSmith tracing and production integrations are planned Round 2 work and must not be described as implemented until they run successfully.
+The Round 1 n8n workflow and browser demo remain the validated baseline. The hybrid structured-extraction path is implemented locally, but hosted LangSmith evidence for `structured_extractor_v2` is still pending.
 
 The project uses synthetic data only for evaluation and documentation purposes, and every generated response waits for human approval before being sent.
 

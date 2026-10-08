@@ -1,4 +1,4 @@
-const fs = require('node:fs');
+﻿const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 
@@ -23,7 +23,12 @@ process.stdout.write(JSON.stringify({
   purpose: result.purpose,
   financing_status: result.financing_status,
   must_escalate: result.must_escalate,
+  human_review_required: result.human_review_required,
+  risk_flags: result.risk_flags,
+  missing_fields: result.missing_fields,
+  qualification_status: result.qualification_status,
   compatible_property_ids: result.matches.map(item => item.id),
-  human_review_required: result.human_review_required
+  match_count: result.matches.length,
+  status: result.status,
+  policy_version: 'baseline_rules_v2'
 }));
-

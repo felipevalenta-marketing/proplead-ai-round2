@@ -4,7 +4,7 @@
 
 - Decision: KEEP
 - Industry: Real estate
-- Company profile: Mallorca microagency, 1–9 employees
+- Company profile: Mallorca microagency, 1â€“9 employees
 - Use case: Multilingual lead qualification and property matching
 - Human approval: Mandatory
 - Peer rating: 4.00 / 5.00
@@ -25,7 +25,7 @@
 
 - [x] Preserve Round 1 n8n baseline
 - [x] Draft the POC upgrade plan
-- [ ] Implement validated structured extraction
+- [x] Implement validated structured extraction
 - [x] Implement deterministic missing-information and qualification gates
 - [x] Implement grounded deterministic multilingual drafting
 - [x] Add a regression for the observed Spanish-to-English draft switch
@@ -53,7 +53,7 @@
 - [x] Confirm with teaching staff that documented synthetic data is acceptable
 - [ ] Create the LangSmith dataset
 - [x] Run the deterministic offline baseline experiment
-- [ ] Run the structured-extractor experiment
+- [ ] Run the hybrid structured_extractor_v2 experiment
 - [ ] Inspect failed traces and add regressions
 - [ ] Report classification, matching and language metrics separately by language
 - [x] Run the feedback-driven regression cases locally
@@ -91,6 +91,6 @@
 1. Import and execute the Round 2 workflow in the target n8n workspace.
 2. Capture a stable backup demo recording.
 3. Implement `structured_extractor_v1`.
-4. Create the LangSmith dataset and run both experiment configurations.
+4. Create the LangSmith dataset and run both experiment configurations, then compare the hybrid `structured_extractor_v2` pipeline against `structured_extractor_v1`.
 5. Inspect failed traces and update regression coverage.
 6. Validate compliance drafts and pilot assumptions with teaching staff.

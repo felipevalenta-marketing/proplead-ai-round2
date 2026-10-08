@@ -31,6 +31,7 @@ node evaluation/run_baseline.js
 - No automatic outbound sending.
 - Deterministic multilingual matching normalises accents, apostrophes, location spellings, budget formats, bedroom phrasing and must-have feature concepts before filtering and ranking.
 - `data/properties.csv` is the source of truth for the browser catalogue, and `mvp/sync_catalogue.js` validates `mvp/catalogue.js` against it.
+- The hybrid structured-extraction path keeps OpenAI on multilingual extraction while a deterministic policy sets escalation, catalogue safety and human-review requirements.
 
 ## Minimum matching gate
 
@@ -93,4 +94,6 @@ These figures describe the documented synthetic benchmark only. They do not prov
 - Authentication and production hosting
 - Sending approved messages
 
-## Next technical step\n\nKeep the deterministic browser MVP as the baseline while any future structured-LLM work stays behind the same qualification, matching and human-review controls.
+## Next technical step
+
+Keep the deterministic browser MVP as the baseline while any future structured-LLM work stays behind the same qualification, matching and human-review controls.

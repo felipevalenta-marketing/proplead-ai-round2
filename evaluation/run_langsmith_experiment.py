@@ -1,4 +1,4 @@
-"""Create the PropLead LangSmith dataset and run baseline/LLM experiments."""
+﻿"""Create the PropLead LangSmith dataset and run baseline/LLM experiments."""
 
 from __future__ import annotations
 
@@ -9,7 +9,8 @@ import subprocess
 from pathlib import Path
 from typing import Any
 
-from structured_extractor_v1 import EXTRACTION_SCHEMA, extract_with_openai
+from structured_extractor_v1 import EXTRACTION_SCHEMA, extract_with_openai as extract_with_openai_v1
+from structured_extractor_v2 import POLICY_VERSION as STRUCTURED_V2_POLICY_VERSION, extract_with_openai as extract_with_openai_v2
 
 
 HERE = Path(__file__).resolve().parent
@@ -108,29 +109,69 @@ def ensure_dataset(client: Any) -> Any:
     return dataset
 
 
-def run_hosted(target_name: str) -> None:
+def summarise_result(result: Any) -> dict[str, Any] | None:
+    summary: dict[str, Any] = {}
+    for key in ("experiment_name", "experiment_url", "dataset_name", "name", "url"):
+        value = getattr(result, key, None)
+        if value:
+            summary[key] = value
+    if isinstance(result, dict):
+        for key in ("experiment_name", "experiment_url", "summary", "metrics"):
+            if key in result:
+                summary[key] = result[key]
+    if not summary and hasattr(result, "to_dict"):
+        try:
+            data = result.to_dict()
+        except Exception:  # pragma: no cover - best effort only
+            data = None
+        if isinstance(data, dict):
+            for key in ("experiment_name", "experiment_url", "summary", "metrics"):
+                if key in data:
+                    summary[key] = data[key]
+    return summary or None
+
+
+def run_hosted(target_name: str) -> Any:
     from langsmith import Client
 
     client = Client()
     dataset = ensure_dataset(client)
-    target = baseline_target if target_name == "baseline" else extract_with_openai
-    prefix = "baseline_rules_v2" if target_name == "baseline" else "structured_extractor_v1"
-    metadata = {"models": [] if target_name == "baseline" else [f"openai:{os.getenv('OPENAI_MODEL', 'gpt-5.4-mini')}"]}
-    client.evaluate(
+    target_map = {
+        "baseline": baseline_target,
+        "structured": extract_with_openai_v1,
+        "structured_v2": extract_with_openai_v2,
+    }
+    prefix_map = {
+        "baseline": "baseline_rules_v2",
+        "structured": "structured_extractor_v1",
+        "structured_v2": "structured_extractor_v2",
+    }
+    target = target_map[target_name]
+    metadata = {"pipeline": "deterministic-baseline" if target_name == "baseline" else "hybrid-openai-plus-policy"}
+    if target_name == "structured":
+        metadata["models"] = [f"openai:{os.getenv('OPENAI_MODEL', 'gpt-5.4-mini')}"]
+    elif target_name == "structured_v2":
+        metadata["openai_model"] = f"openai:{os.getenv('OPENAI_MODEL', 'gpt-5.4-mini')}"
+        metadata["policy_version"] = STRUCTURED_V2_POLICY_VERSION
+    result = client.evaluate(
         target,
         data=dataset.name,
         evaluators=[exact_field_accuracy, language_correct, escalation_correct, human_gate_correct, no_critical_fabrication],
-        experiment_prefix=prefix,
+        experiment_prefix=prefix_map[target_name],
         description="PropLead controlled synthetic benchmark; mandatory human review.",
         max_concurrency=1 if target_name == "baseline" else 2,
         metadata=metadata,
     )
+    summary = summarise_result(result)
+    if summary:
+        print(json.dumps(summary, indent=2, ensure_ascii=False))
+    return result
 
 
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--validate-only", action="store_true")
-    parser.add_argument("--target", choices=["baseline", "structured"], default="baseline")
+    parser.add_argument("--target", choices=["baseline", "structured", "structured_v2"], default="baseline")
     args = parser.parse_args()
     validation = validate_local()
     print(json.dumps(validation, indent=2))
@@ -147,4 +188,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
