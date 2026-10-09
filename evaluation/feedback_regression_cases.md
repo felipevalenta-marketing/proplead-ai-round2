@@ -2,6 +2,8 @@
 
 These cases turn the Round 1 peer feedback into measurable Round 2 tests. They supplement the 18-case multilingual seed dataset and the new unseen-matching regressions.
 
+Status: the final hosted hybrid structured-extraction evaluation passed, the regression cases remain in force, and mandatory human review is still required.
+
 | ID | Scenario | Source | Expected control |
 |---|---|---|---|
 | REG-01 | Spanish enquiry produces a Spanish greeting but an English body | WhatsApp | Fail the draft; regenerate or escalate until greeting, body and closing are Spanish |
@@ -18,13 +20,14 @@ These cases turn the Round 1 peer feedback into measurable Round 2 tests. They s
 - Pass/fail per case and evaluator.
 - Trace showing the normalised input and structured output.
 - Root cause and correction for each failure.
-- Confirmation that the corrected case remains in the regression set.
+- Confirmation that the corrected case remains in the regression set and still passes in the final hosted evaluation.
 - Short usability check: an agent can identify the original evidence, correct a field and approve or reject the draft without guidance.
 
 ## New unseen-matching regressions
 
 | Category | Initial failure pattern | Final result |
 |---|---|---|
+| Hosted structured-v2 matching | Five canonical cases returned empty compatible IDs in the initial run | Final hosted run reached 100% matching while keeping human review mandatory |
 | Accent and apostrophe normalisation | Palma / Sóller / Artà variants were not matched reliably | All requested catalogue locations now match deterministically |
 | Budget parsing | 600k, 450 mil, 1,4 millones and 1,3 Millionen were inconsistently extracted | All requested budget formats parse to the correct euro value |
 | Bedroom parsing | Word-based and hyphenated bedroom phrases were missed; ranges stayed ambiguous | Definite bedroom counts are extracted and ranges still block matching |

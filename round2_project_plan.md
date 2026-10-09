@@ -51,13 +51,13 @@
 - [x] Define evaluator design and thresholds
 - [x] Create 18 synthetic seed cases
 - [x] Confirm with teaching staff that documented synthetic data is acceptable
-- [ ] Create the LangSmith dataset
+- [x] Create the LangSmith dataset
 - [x] Run the deterministic offline baseline experiment
-- [ ] Run the hybrid structured_extractor_v2 experiment
-- [ ] Inspect failed traces and add regressions
-- [ ] Report classification, matching and language metrics separately by language
+- [x] Run the hybrid structured_extractor_v2 experiment
+- [x] Inspect failed traces and add regressions
+- [x] Report classification, matching and language metrics separately by language
 - [x] Run the feedback-driven regression cases locally
-- [ ] Complete `evaluation/langsmith.md` with real results
+- [x] Complete `evaluation/langsmith.md` with real results
 
 ### 5. Business and compliance
 
@@ -88,9 +88,6 @@
 
 ## Next working session
 
-1. Import and execute the Round 2 workflow in the target n8n workspace.
-2. Capture a stable backup demo recording.
-3. Implement `structured_extractor_v1`.
-4. Create the LangSmith dataset and run both experiment configurations, then compare the hybrid `structured_extractor_v2` pipeline against `structured_extractor_v1`.
-5. Inspect failed traces and update regression coverage.
-6. Validate compliance drafts and pilot assumptions with teaching staff.
+1. Prepare the final presentation and demo assets.
+2. Keep the promoted `hybrid_policy_v2` candidate review-gated in every response path.
+3. Validate compliance drafts and pilot assumptions with teaching staff.

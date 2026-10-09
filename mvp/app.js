@@ -156,11 +156,11 @@
     const source = stripDiacritics(normaliseText(text)).toLowerCase();
     const values = [];
     const patterns = [
-      /(?:€|eur|euro|euros)\s*([0-9][0-9.,]*)\s*(k|mil|m|million(?:es)?|millones?|millon)?\b/gi,
+      /(?:\u20ac|eur|euro|euros)\s*([0-9][0-9.,]*)\s*(k|mil|m|million(?:es)?|millones?|millon)?\b/gi,
       /\b([0-9][0-9.,]*)\s*(k|mil|m|million(?:en|es)?|millones?|millon)\b/gi,
       /\b(?:budget|presupuesto)\b[^0-9]{0,20}([0-9][0-9.,]*)\s*(k|mil|m|million(?:es)?|millones?|millon)?\b/gi,
-      /\b([0-9][0-9.,]*)\s*(?:€|eur|euro|euros)\b/gi,
-      /(?:€|eur|euro|euros)\s*([0-9][0-9.,]*)\b/gi
+      /\b([0-9][0-9.,]*)\s*(?:\u20ac|eur|euro|euros)\b/gi,
+      /(?:\u20ac|eur|euro|euros)\s*([0-9][0-9.,]*)\b/gi
     ];
     for (const pattern of patterns) {
       for (const match of source.matchAll(pattern)) {

@@ -1,4 +1,4 @@
-﻿"""Hybrid structured extraction target for the PropLead LangSmith experiment."""
+"""Hybrid structured extraction target for the PropLead LangSmith experiment."""
 
 from __future__ import annotations
 
@@ -21,6 +21,7 @@ def _run_policy_audit(inputs: dict[str, Any]) -> dict[str, Any]:
         ["node", str(BASELINE_CASE_SCRIPT)],
         input=json.dumps(inputs, ensure_ascii=False),
         text=True,
+        encoding="utf-8",
         capture_output=True,
         cwd=ROOT,
         check=True,
@@ -28,6 +29,18 @@ def _run_policy_audit(inputs: dict[str, Any]) -> dict[str, Any]:
     audit = json.loads(completed.stdout)
     audit["policy_version"] = POLICY_VERSION
     return audit
+
+
+def _extract_match_ids(audit: dict[str, Any]) -> list[str]:
+    match_ids = audit.get("compatible_property_ids") or audit.get("match_ids") or []
+    if match_ids:
+        return list(match_ids)
+    matches = audit.get("matches") or []
+    if matches and isinstance(matches[0], dict):
+        return [item["id"] for item in matches if item.get("id")]
+    if matches and isinstance(matches[0], str):
+        return list(matches)
+    return []
 
 
 def apply_deterministic_policy(
@@ -51,11 +64,12 @@ def apply_deterministic_policy(
 
     policy_sensitive_flags = {"mortgage_advice", "tax_or_legal_advice", "negotiation_or_contract"}
     ambiguity_flags = {"conflicting_budget", "ambiguous_property_type", "ambiguous_bedrooms", "mixed_language", "multiple_locations", "uncertain_requirements"}
+    match_ids = _extract_match_ids(audit)
     matching_ready = not missing_fields and not audit_flags.intersection(ambiguity_flags)
     zero_safe_match = (
         matching_ready
         and not audit_flags.intersection(policy_sensitive_flags)
-        and audit.get("compatible_property_ids") == []
+        and match_ids == []
         and not audit.get("missing_fields")
     )
 
@@ -65,7 +79,7 @@ def apply_deterministic_policy(
     output["risk_flags"] = sorted(audit_flags.union(missing_fields))
     output["missing_fields"] = missing_fields
     output["qualification_status"] = "matching_ready" if matching_ready else "needs_information"
-    output["compatible_property_ids"] = list(audit.get("compatible_property_ids", []))
+    output["compatible_property_ids"] = match_ids
     output["policy_version"] = audit.get("policy_version", POLICY_VERSION)
     return output
 

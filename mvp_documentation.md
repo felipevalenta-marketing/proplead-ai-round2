@@ -2,7 +2,7 @@
 
 ## MVP statement
 
-PropLead is an offline browser MVP for a small Mallorca real-estate agency. It converts one English, German or Spanish enquiry into a structured lead, exposes missing or risky information, calculates a transparent score, gates property matching and prepares a same-language draft for mandatory human review.
+PropLead is an offline browser MVP for a small Mallorca real-estate agency. It converts one English, German or Spanish enquiry into a structured lead, exposes missing or risky information, calculates a transparent score, gates property matching and prepares a same-language draft for mandatory human review. The final hybrid structured-extraction evaluation is complete, and `hybrid_policy_v2` is the promoted candidate for review-gated use.
 
 ## How to run
 
@@ -87,7 +87,7 @@ These figures describe the documented synthetic benchmark only. They do not prov
 ## Not yet implemented
 
 - LLM structured extraction
-- LangSmith dataset upload and experiment
+- LangSmith dataset upload and experiment - complete, with the final structured-v2 result published in `evaluation/langsmith.md`
 - Live WhatsApp, email, social or portal integrations
 - CRM write access
 - Real customer data
@@ -96,4 +96,4 @@ These figures describe the documented synthetic benchmark only. They do not prov
 
 ## Next technical step
 
-Keep the deterministic browser MVP as the baseline while any future structured-LLM work stays behind the same qualification, matching and human-review controls.
+Keep the deterministic browser MVP as the baseline while any future structured-LLM work stays behind the same qualification, matching and human-review controls, and keep mandatory human review in place.

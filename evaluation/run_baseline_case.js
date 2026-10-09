@@ -1,4 +1,4 @@
-﻿const fs = require('node:fs');
+const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 
@@ -10,7 +10,7 @@ vm.runInNewContext(catalogueCode, sandbox);
 const result = app.processLead(
   { source_channel: input.source_channel, original_text: input.message },
   sandbox.window.PROPLEAD_CATALOGUE,
-  { now: '2026-10-03', freshnessDays: 30 }
+  { reference_date: '2026-10-03', availability_freshness_days: 30 }
 );
 
 process.stdout.write(JSON.stringify({
@@ -28,6 +28,7 @@ process.stdout.write(JSON.stringify({
   missing_fields: result.missing_fields,
   qualification_status: result.qualification_status,
   compatible_property_ids: result.matches.map(item => item.id),
+  match_ids: result.matches.map(item => item.id),
   match_count: result.matches.length,
   status: result.status,
   policy_version: 'baseline_rules_v2'

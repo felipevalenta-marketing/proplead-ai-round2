@@ -1,4 +1,4 @@
-﻿"""Create the PropLead LangSmith dataset and run baseline/LLM experiments."""
+"""Create the PropLead LangSmith dataset and run baseline/LLM experiments."""
 
 from __future__ import annotations
 
@@ -46,6 +46,7 @@ def baseline_target(inputs: dict[str, Any]) -> dict[str, Any]:
         command,
         input=json.dumps(inputs, ensure_ascii=False),
         text=True,
+        encoding="utf-8",
         capture_output=True,
         cwd=ROOT,
         check=True,
@@ -80,6 +81,16 @@ def no_critical_fabrication(inputs: dict, outputs: dict, reference_outputs: dict
         if expected in (None, []) and actual not in (None, []):
             fabricated.append(field)
     return {"key": "no_critical_fabrication", "score": 0 if fabricated else 1, "comment": ", ".join(fabricated) or "none"}
+
+
+def matching_correct(inputs: dict, outputs: dict, reference_outputs: dict) -> dict:
+    actual = sorted(outputs.get("compatible_property_ids") or [])
+    expected = sorted(reference_outputs.get("compatible_property_ids") or [])
+    return {
+        "key": "matching_correct",
+        "score": 1 if actual == expected else 0,
+        "comment": f"actual={actual}; expected={expected}",
+    }
 
 
 def ensure_dataset(client: Any) -> Any:
@@ -156,7 +167,7 @@ def run_hosted(target_name: str) -> Any:
     result = client.evaluate(
         target,
         data=dataset.name,
-        evaluators=[exact_field_accuracy, language_correct, escalation_correct, human_gate_correct, no_critical_fabrication],
+        evaluators=[exact_field_accuracy, language_correct, escalation_correct, human_gate_correct, matching_correct, no_critical_fabrication],
         experiment_prefix=prefix_map[target_name],
         description="PropLead controlled synthetic benchmark; mandatory human review.",
         max_concurrency=1 if target_name == "baseline" else 2,

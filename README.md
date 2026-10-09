@@ -33,14 +33,14 @@ One free-text enquiry enters the system. The MVP:
 - The 18-case multilingual dataset was created and validated.
 - Both LangSmith experiments were executed.
 - The structured OpenAI experiment achieved 100% language accuracy, 100% mandatory human-review compliance, 94.4% no-critical-fabrication performance, 92.4% explicit-field accuracy and 61.1% escalation accuracy.
-- Hybrid structured_extractor_v2 policy tests now pass locally without calling OpenAI.
+- The final hosted structured_extractor_v2 experiment achieved 100% matching and remains review-gated as the final MVP evaluation candidate.
 - Current improvement priorities are unseen-query property matching and deterministic escalation.
 - Synthetic data is documented, and no response is sent without human approval.
 - Round 1 peer feedback (4.00 / 5.00) translated into scope, controls and regression criteria.
 
 ## Important implementation boundary
 
-The Round 1 n8n workflow and browser demo remain the validated baseline. The hybrid structured-extraction path is implemented locally, but hosted LangSmith evidence for `structured_extractor_v2` is still pending.
+The Round 1 n8n workflow and browser demo remain the validated baseline. The hybrid structured-extraction path has been fully evaluated in LangSmith, but every generated response still waits for mandatory human approval.
 
 The project uses synthetic data only for evaluation and documentation purposes, and every generated response waits for human approval before being sent.
 
