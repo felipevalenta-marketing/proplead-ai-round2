@@ -108,31 +108,51 @@ This is the public MVP demo. It shows the practical workflow without any live AP
 
 **Approx. speaking time:** 75–90 seconds
 
-## 6) n8n proof of concept
+## 6) Browser MVP
+
+**Slide title:** Browser MVP
+
+**On-slide content:**
+- Deterministic public browser MVP
+- Catalogued matches only from the synthetic property set
+- Human review required before any reply is sent
+- Uses the same multilingual lead structure as the rest of the project
+
+**Recommended visual or screenshot:**
+- `presentation/assets/mvp_live_demo.png` showing the live browser interface
+
+**Speaker notes:**
+This is the public browser MVP. It is deterministic, catalogue-bound and review-gated. It does not call OpenAI in the browser flow. The goal is to show the safe end-user experience: standardised intake, structured lead handling, a controlled property match and mandatory human approval.
+
+**What to show on screen:**
+- The live MVP URL and the browser review panel
+
+**Approx. speaking time:** 45?55 seconds
+
+## 7) n8n operational POC
 
 **Slide title:** n8n operational POC
 
 **On-slide content:**
 - Imported eight-node workflow, including the Manual Trigger
 - Executed successfully in the target n8n environment
-- Demonstrates the operational path
-- 2/2 simulated inputs preserved through every downstream node
-- Still uses synthetic/simulated input, not production integrations
+- Demonstrates the operational path with simulated inputs
+- Preserves both Spanish and German test cases end to end
 
 **Recommended visual or screenshot:**
-- `presentation/assets/n8n_workflow_success.png` alongside the Spanish and German evidence screenshots and the workflow JSON
+- `presentation/assets/n8n_workflow_success.png` with the Spanish and German result screenshots beside it
 
 **Speaker notes:**
 The n8n proof of concept shows the operational flow. It is separate from the browser MVP and separate from the LangSmith extractor evaluation. It demonstrates that the eight-node workflow can run in n8n, but it does not mean live integrations are finished.
 
 **What to show on screen:**
-- `n8n/README.md` or the execution evidence file
+- `presentation/assets/n8n_workflow_success.png`, `presentation/assets/n8n_spanish_result.png`, and `presentation/assets/n8n_german_escalation.png`
 
-**Approx. speaking time:** 45–55 seconds
+**Approx. speaking time:** 55?65 seconds
 
-## 7) LangSmith evaluation: v1 versus final hybrid v2
+## 8) Hybrid v2 evaluation results
 
-**Slide title:** LangSmith evidence
+**Slide title:** Hybrid v2 evaluation results
 
 **On-slide content:**
 - Baseline v1: `structured_extractor_v1-fd0b3bae`
@@ -143,7 +163,7 @@ The n8n proof of concept shows the operational flow. It is separate from the bro
 - v2 also records 93.0556% explicit-field accuracy and 94.4444% no-critical-fabrication
 
 **Recommended visual or screenshot:**
-- `evaluation/langsmith.md`
+- `evaluation/langsmith.md` and `presentation/assets/langsmith_v2_results.png`
 
 **Speaker notes:**
 The LangSmith evidence matters because it separates the extraction experiment from the browser MVP. The v1 run was useful as a baseline, but it showed weak escalation. The final hybrid v2 run fixed the matching path and delivered the best documented result in the repository: perfect matching, perfect escalation, perfect human-review gating and perfect language correctness. The run also records 93.0556% explicit-field accuracy and 94.4444% no-critical-fabrication. The remaining gap is explicit-field accuracy, which is good but not perfect.
@@ -151,49 +171,29 @@ The LangSmith evidence matters because it separates the extraction experiment fr
 **What to show on screen:**
 - `evaluation/langsmith.md` with the final structured v2 section visible
 
-**Approx. speaking time:** 75–90 seconds
+**Approx. speaking time:** 75?90 seconds
 
-## 8) Business value and ROI assumptions
+## 9) Value case for a microagency
 
 **Slide title:** Value case for a microagency
 
 **On-slide content:**
-- Assumption: 1–9 employees, about 60 enquiries/month
-- Loaded labour cost: €25/hour
-- Implementation: €4,200; operating cost: €240/month
+- Assumption: 1?9 employees, about 60 enquiries/month
+- Loaded labour cost: ?25/hour
+- Implementation: ?4,200; operating cost: ?240/month
 - ROI depends on measured time saved per lead
+- Human review, logging and data controls reduce operational and compliance risk
 
 **Recommended visual or screenshot:**
-- `roi_risk_assessment.md` scenario table
+- `roi_risk_assessment.md` scenario table and control sections
 
 **Speaker notes:**
 The ROI section is a planning model, not a measured business result. It assumes a small agency and compares conservative, expected and optimistic scenarios. The key point is that the system only makes sense if it saves real agent time. The repository explicitly keeps assumptions separate from measured results.
 
 **What to show on screen:**
-- The monthly lead-volume scenario table in `roi_risk_assessment.md`
+- The monthly lead-volume scenario table and risk/control sections in `roi_risk_assessment.md`
 
-**Approx. speaking time:** 50–60 seconds
-
-## 9) Risks, GDPR and EU AI Act considerations
-
-**Slide title:** Safety and compliance plan
-
-**On-slide content:**
-- Assessment, not legal compliance claim
-- Decision support only; no autonomous property or customer decisions
-- Human oversight, logging, data minimisation and retention controls
-- Synthetic data documented; real enquiries need extra controls
-
-**Recommended visual or screenshot:**
-- `eu_ai_act_compliance.md` and `gdpr_documentation.md`
-
-**Speaker notes:**
-The compliance documents are careful on purpose. They do not claim full legal compliance. They describe the intended use, the controls and the next steps before production. The system does not autonomously accept or reject buyers, and it keeps human approval in the loop. The GDPR document also makes clear that the current MVP is synthetic and that real enquiries need stronger production controls.
-
-**What to show on screen:**
-- The risk/control tables in the compliance docs
-
-**Approx. speaking time:** 60–70 seconds
+**Approx. speaking time:** 50?60 seconds
 
 ## 10) Four-week pilot and final roadmap
 
