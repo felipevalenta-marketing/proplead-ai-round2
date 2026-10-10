@@ -164,11 +164,11 @@ def card(draw, box, title, body_lines=None, fill=CARD, outline=TEAL, title_fill=
             y += 8
 
 
-def metric_card(draw, box, label, value, accent=TEAL, value_size=34, label_size=18, value_fill=TEXT, label_fill=TEXT_SOFT):
+def metric_card(draw, box, label, value, accent=TEAL, value_size=34, label_size=18, value_fill=TEXT, label_fill=TEXT_SOFT, label_y_offset=18, value_y_offset=50):
     x1, y1, x2, y2 = box
     draw_round_rect(draw, box, fill=hexrgb(CARD), outline=hexrgb(accent), width=3, radius=24)
-    draw.text((x1 + 22, y1 + 18), label, font=f(label_size, bold=True), fill=hexrgb(label_fill))
-    draw.text((x1 + 22, y1 + 50), value, font=f(value_size, bold=True), fill=hexrgb(value_fill))
+    draw.text((x1 + 22, y1 + label_y_offset), label, font=f(label_size, bold=True), fill=hexrgb(label_fill))
+    draw.text((x1 + 22, y1 + value_y_offset), value, font=f(value_size, bold=True), fill=hexrgb(value_fill))
 
 
 def placeholder(draw, box, title, subtitle=None):
@@ -221,15 +221,15 @@ def arrow(draw, x1, y1, x2, y2, color=TEAL, width=6):
     draw.polygon([(x2, y2), p1, p2], fill=hexrgb(color))
 
 
-def process_box(draw, box, title, subtitle, accent=TEAL, fill=CARD):
+def process_box(draw, box, title, subtitle, accent=TEAL, fill=CARD, title_size=24, body_size=18, body_top_offset=62):
     x1, y1, x2, y2 = box
     draw_round_rect(draw, box, fill=hexrgb(fill), outline=hexrgb(accent), width=3, radius=24)
-    draw.text((x1 + 20, y1 + 18), title, font=f(24, bold=True), fill=hexrgb(TEXT))
-    lines = wrap_text(draw, subtitle, f(18), x2 - x1 - 40)
-    cur_y = y1 + 62
+    draw.text((x1 + 20, y1 + 18), title, font=f(title_size, bold=True), fill=hexrgb(TEXT))
+    lines = wrap_text(draw, subtitle, f(body_size), x2 - x1 - 40)
+    cur_y = y1 + body_top_offset
     for line in lines:
-        draw.text((x1 + 20, cur_y), line, font=f(18), fill=hexrgb(TEXT_SOFT))
-        cur_y += 28
+        draw.text((x1 + 20, cur_y), line, font=f(body_size), fill=hexrgb(TEXT_SOFT))
+        cur_y += body_size + 8
 
 
 def metric_strip(draw, start_x, y, items, card_w=250, accent=TEAL):
@@ -349,7 +349,8 @@ def build_slide_images(build_dir: Path) -> list[SlideAsset]:
             title_block(draw, sec["title"], "PropLead AI • Ironhack Round 2")
         badge(draw, 1490, 62, "Deployed MVP + POC + Evaluation", fill=SLATE, outline=TEAL)
         if sec["num"] == 1:
-            draw.text((90, 245), "Multilingual lead qualification for a Mallorca microagency", font=f(30), fill=hexrgb("#D6E1EA"))
+            subtitle_lines = wrap_text(draw, "Multilingual lead qualification for a Mallorca microagency", f(28), 520)
+            draw.multiline_text((90, 235), "\n".join(subtitle_lines), font=f(28), fill=hexrgb("#D6E1EA"), spacing=8)
             metric_card(draw, (95, 340, 560, 500), "Browser MVP", "Deterministic\nreview-gated", accent=TEAL)
             metric_card(draw, (95, 530, 560, 690), "n8n POC", "Imported and\nexecuted", accent=GREEN)
             metric_card(draw, (95, 720, 560, 880), "LangSmith", "Hybrid v2\nevaluated", accent=AMBER)
@@ -403,20 +404,29 @@ def build_slide_images(build_dir: Path) -> list[SlideAsset]:
         elif sec["num"] == 5:
             # workflow flow
             boxes = [
-                (70, 400, 300, 540, "Simulated intake", "web form / email / WhatsApp / portal / social / manual"),
-                (335, 400, 565, 540, "Language detection", "EN / DE / ES"),
-                (600, 400, 830, 540, "Structured extraction", "Budget • location • type • bedrooms • preferences"),
-                (865, 400, 1095, 540, "Qualification gate", "Needs information or ready for matching"),
-                (1130, 400, 1360, 540, "Catalogue-bound matching", "Availability and hard filters only"),
-                (1395, 400, 1625, 540, "Agent review", "Draft response and approval"),
-                (1660, 400, 1850, 540, "Send?", "Never automatic"),
+                (70, 390, 305, 555, "Simulated intake", "web form / email / WhatsApp / portal / social / manual"),
+                (335, 390, 570, 555, "Language detection", "EN / DE / ES"),
+                (600, 390, 835, 555, "Structured extraction", "Budget • location • type • bedrooms • preferences"),
+                (865, 390, 1100, 555, "Qualification gate", "Needs information or ready for matching"),
+                (1130, 390, 1365, 555, "Catalogue-bound matching", "Availability and hard filters only"),
+                (1395, 390, 1630, 555, "Agent review", "Draft response and approval"),
+                (1660, 390, 1850, 555, "Send?", "Never automatic"),
             ]
             for i, (x1, y1, x2, y2, title, subtitle) in enumerate(boxes):
-                process_box(draw, (x1, y1, x2, y2), title, subtitle, accent=[TEAL, GREEN, TEAL_2, AMBER, TEAL, GREEN, RED][i])
+                process_box(
+                    draw,
+                    (x1, y1, x2, y2),
+                    title,
+                    subtitle,
+                    accent=[TEAL, GREEN, TEAL_2, AMBER, TEAL, GREEN, RED][i],
+                    title_size=21,
+                    body_size=16,
+                    body_top_offset=56,
+                )
                 if i < len(boxes) - 1:
-                    arrow(draw, x2 + 10, 470, boxes[i + 1][0] - 10, 470, color=TEAL, width=6)
-            badge(draw, 670, 665, "No automatic customer messaging", fill=SLATE, outline=AMBER, font_size=24)
-            card(draw, (140, 720, 1780, 900), "Controlled properties", [
+                    arrow(draw, x2 + 10, 472, boxes[i + 1][0] - 10, 472, color=TEAL, width=6)
+            badge(draw, 670, 675, "No automatic customer messaging", fill=SLATE, outline=AMBER, font_size=24)
+            card(draw, (140, 730, 1780, 900), "Controlled properties", [
                 "Catalogue-bound matching uses a fixed property list, current availability and explicit hard constraints only.",
             ], fill=CARD, outline=TEAL, title_fill=TEXT, body_fill=TEXT_SOFT, title_size=28, body_size=24, body_top_offset=64)
             # Maybe highlight simulated channels
@@ -441,14 +451,14 @@ def build_slide_images(build_dir: Path) -> list[SlideAsset]:
             image_panel(img, draw, ASSET_DIR / "langsmith_v2_results.png", (85, 220, 1835, 585), "Final LangSmith v2 evaluation", bg="#13253B", outline=TEAL, crop_box=(0.00, 0.12, 1.00, 0.80))
             draw.text((100, 605), "Baseline v1 — structured_extractor_v1-fd0b3bae", font=f(24, bold=True), fill=hexrgb(WHITE))
             draw.text((1025, 605), "Final hybrid v2 — structured_extractor_v2-d2454c34", font=f(24, bold=True), fill=hexrgb(WHITE))
-            metric_card(draw, (100, 650, 860, 722), "Matching correctness", v1_metrics.get("Matching correctness", "72.2%"), accent=RED, value_size=20, label_size=16)
-            metric_card(draw, (100, 730, 860, 802), "Escalation correctness", v1_metrics.get("Escalation correctness", "61.1%"), accent=RED, value_size=20, label_size=16)
-            metric_card(draw, (100, 810, 860, 882), "Human-review gate", v1_metrics.get("Human-review gate", "100%"), accent=GREEN, value_size=20, label_size=16)
-            metric_card(draw, (100, 890, 860, 962), "Language correctness", v1_metrics.get("Language correctness", "100%"), accent=TEAL, value_size=20, label_size=16)
-            metric_card(draw, (1025, 650, 1785, 722), "Matching correctness", v2_metrics.get("Matching correctness", "100%"), accent=GREEN, value_size=20, label_size=16)
-            metric_card(draw, (1025, 730, 1785, 802), "Escalation correctness", v2_metrics.get("Escalation correctness", "100%"), accent=GREEN, value_size=20, label_size=16)
-            metric_card(draw, (1025, 810, 1785, 882), "Human-review gate", v2_metrics.get("Human-review gate", "100%"), accent=GREEN, value_size=20, label_size=16)
-            metric_card(draw, (1025, 890, 1785, 962), "Language correctness", v2_metrics.get("Language correctness", "100%"), accent=GREEN, value_size=20, label_size=16)
+            metric_card(draw, (100, 648, 860, 728), "Matching correctness", v1_metrics.get("Matching correctness", "72.2%"), accent=RED, value_size=20, label_size=16, label_y_offset=16, value_y_offset=42)
+            metric_card(draw, (100, 728, 860, 808), "Escalation correctness", v1_metrics.get("Escalation correctness", "61.1%"), accent=RED, value_size=20, label_size=16, label_y_offset=16, value_y_offset=42)
+            metric_card(draw, (100, 808, 860, 888), "Human-review gate", v1_metrics.get("Human-review gate", "100%"), accent=GREEN, value_size=20, label_size=16, label_y_offset=16, value_y_offset=42)
+            metric_card(draw, (100, 888, 860, 968), "Language correctness", v1_metrics.get("Language correctness", "100%"), accent=TEAL, value_size=20, label_size=16, label_y_offset=16, value_y_offset=42)
+            metric_card(draw, (1025, 648, 1785, 728), "Matching correctness", v2_metrics.get("Matching correctness", "100%"), accent=GREEN, value_size=20, label_size=16, label_y_offset=16, value_y_offset=42)
+            metric_card(draw, (1025, 728, 1785, 808), "Escalation correctness", v2_metrics.get("Escalation correctness", "100%"), accent=GREEN, value_size=20, label_size=16, label_y_offset=16, value_y_offset=42)
+            metric_card(draw, (1025, 808, 1785, 888), "Human-review gate", v2_metrics.get("Human-review gate", "100%"), accent=GREEN, value_size=20, label_size=16, label_y_offset=16, value_y_offset=42)
+            metric_card(draw, (1025, 888, 1785, 968), "Language correctness", v2_metrics.get("Language correctness", "100%"), accent=GREEN, value_size=20, label_size=16, label_y_offset=16, value_y_offset=42)
             badge(draw, 85, 970, f"Explicit-field accuracy: {v2_metrics.get('Explicit-field accuracy', '93.0556%')}", fill=SLATE, outline=TEAL, font_size=18)
             badge(draw, 445, 970, f"No-critical-fabrication: {v2_metrics.get('No-critical-fabrication', '94.4444%')}", fill=SLATE, outline=TEAL, font_size=18)
             badge(draw, 855, 970, f"Average latency: {v2_metrics.get('Average latency', '1.5378 seconds')}", fill=SLATE, outline=TEAL_2, font_size=18)
@@ -486,7 +496,7 @@ def build_slide_images(build_dir: Path) -> list[SlideAsset]:
                 (1270, 390, 1600, 620, "Week 4", "Decision", "Continue, narrow or pause based on the evidence."),
             ]
             for idx, (x1, y1, x2, y2, week, title, body) in enumerate(steps):
-                card(draw, (x1, y1, x2, y2), f"{week} — {title}", [f"{body}"], fill=CARD, outline=[TEAL, GREEN, AMBER, TEAL_2][idx], title_fill=TEXT, body_fill=TEXT_SOFT, title_size=24, body_size=22, body_top_offset=72)
+                card(draw, (x1, y1, x2, y2), f"{week} — {title}", [f"{body}"], fill=CARD, outline=[TEAL, GREEN, AMBER, TEAL_2][idx], title_fill=TEXT, body_fill=TEXT_SOFT, title_size=22, body_size=22, body_top_offset=72)
                 if idx < len(steps) - 1:
                     arrow(draw, x2 + 8, 505, steps[idx + 1][0] - 10, 505, color=TEAL, width=6)
             card(draw, (170, 710, 1750, 930), "Pilot conclusion", [
