@@ -74,6 +74,7 @@
 - [x] Draft `strategic_plan.md` with an explicit four-week controlled pilot
 - [x] Define pilot KPIs and stop conditions
 - [x] Final presentation package complete
+- [x] Demo evidence provided through final presentation screenshots; teaching staff confirmed this format is sufficient.
 - [ ] Record a backup demonstration
 - [ ] Rehearse the final pitch
 
@@ -85,11 +86,10 @@
 - [x] The strategic plan contains a four-week, single-agency pilot with weekly review and no automatic customer messaging.
 - [x] Compliance drafts distinguish assumptions, controls and production requirements from measured results.
 - [x] Final presentation package is complete.
-- [ ] Demo recording still needs a published URL.
+- [x] Demo evidence is complete through final presentation screenshots, which teaching staff confirmed are sufficient.
 - [ ] Live pilot setup still requires agency approval and real-data controls.
 
 ## Remaining mandatory deliverables
 
 - [ ] Record a backup demonstration
 - [ ] Rehearse the final pitch
-- [ ] Publish the demo recording URL once the recording exists

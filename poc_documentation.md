@@ -81,3 +81,4 @@ Expected output:
 - The workflow uses documented synthetic leads and a controlled synthetic catalogue.
 - It does not send email, WhatsApp or CRM messages.
 - It is an importable POC only and is separate from the public browser MVP and the LangSmith evaluation targets.
+- Teaching staff confirmed on 10 October 2026 that final presentation screenshots or the presentation itself are sufficient demo evidence.

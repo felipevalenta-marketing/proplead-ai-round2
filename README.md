@@ -18,7 +18,8 @@ Round 2 keeps the same capstone use case but narrows the scope to a controlled m
 - Final hosted metrics: matching 100%, escalation 100%, human-review gate 100%, language 100%, explicit-field accuracy 93.0556% and no-critical-fabrication 94.4444%.
 - The current documentation promotes `hybrid_policy_v2` as the evaluation candidate while keeping mandatory human review.
 - The final presentation package is complete: [content](presentation/final_presentation_content.md), [runbook](presentation/demo_runbook.md), [PowerPoint](presentation/PropLead_AI_Final_Presentation.pptx).
-- The demo recording is still pending and no public recording URL is documented yet.
+- Teaching staff confirmed on 10 October 2026 that final presentation screenshots or the presentation itself are sufficient demo evidence.
+- The demo evidence requirement is complete and no video URL is documented.
 - The final pitch rehearsal is still pending.
 - Synthetic data is documented throughout the repository, and no response is sent automatically.
 
