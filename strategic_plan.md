@@ -1,4 +1,4 @@
-# PropLead strategic plan
+﻿# PropLead strategic plan
 
 ## Objective
 
@@ -15,20 +15,21 @@ Validate whether PropLead can reduce multilingual lead-preparation time without 
 - Complete LangSmith baseline and structured-extractor experiments.
 - Train participating agents on human oversight.
 
-**Exit gate:** all critical evaluation thresholds pass and no unsupported automated sending exists.
+**Exit gate:** all critical evaluation thresholds pass and no unsupported automatic sending exists.
 
-## Phase 1 — Controlled pilot
+## Phase 1 — Four-week pilot
 
-**Duration:** 30 days  
-**Users:** 2–3 trained agents  
-**Volume:** maximum 50 permissioned or properly sourced enquiries
+**Duration:** 4 weeks
+**Scope:** one agency, 2–3 trained agents, limited lead channels
+**Channels:** email copies, web-form copies and manual entry only
 
-- Start with email/web-form copies or manual entry, not live automatic sending.
 - Process English, German and Spanish enquiries.
 - Require approval for every structured record, match and draft.
+- Do not send customer messages automatically during the pilot.
 - Reconfirm property availability before use.
 - Log corrections, rejections and escalations.
-- Hold a weekly failure-review session.
+- Hold a weekly review meeting.
+- Maintain a rollback plan that disables matching or drafting if a stop condition appears.
 
 ## Pilot KPIs and thresholds
 
@@ -72,4 +73,3 @@ Choose one outcome:
 - **Pause:** risk, accuracy or economics do not justify deployment.
 
 Autonomous sending, credit decisions, negotiation and legal advice remain outside the strategy.
-

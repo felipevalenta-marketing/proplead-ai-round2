@@ -1,10 +1,10 @@
-# PropLead Round 2 project plan
+﻿# PropLead Round 2 project plan
 
 ## Confirmed direction
 
 - Decision: KEEP
 - Industry: Real estate
-- Company profile: Mallorca microagency, 1â€“9 employees
+- Company profile: Mallorca microagency, 1–9 employees
 - Use case: Multilingual lead qualification and property matching
 - Human approval: Mandatory
 - Peer rating: 4.00 / 5.00
@@ -32,7 +32,7 @@
 - [x] Add explicit approve, edit, reject and escalate outcomes
 - [x] Draft same-language missing-information questions for agent approval
 - [x] Design and test the focused agent review screen
-- [ ] Record stable POC demo
+- [x] Record stable POC demo
 - [x] Complete `poc_documentation.md`
 
 ### 3. Working MVP
@@ -65,17 +65,27 @@
 - [x] Draft `roi_risk_assessment.md`
 - [x] Draft `gdpr_documentation.md`
 - [x] Draft `eu_ai_act_compliance.md`
-- [ ] Confirm data retention, deletion and access controls
-- [ ] Confirm authorised property catalogue process
+- [x] Confirm data retention, deletion and access controls
+- [x] Confirm authorised property catalogue process
 - [ ] Define the permissioned real-data pilot and anonymisation process
 
 ### 6. Strategy and final presentation
 
-- [x] Draft `strategic_plan.md` with a 30-day controlled pilot
+- [x] Draft `strategic_plan.md` with an explicit four-week controlled pilot
 - [x] Define pilot KPIs and stop conditions
 - [ ] Prepare the final presentation
 - [ ] Record a backup demonstration
 - [ ] Rehearse the final pitch
+
+## Evidence-based completion checklist
+
+- [x] Required Round 2 documents exist in the repository.
+- [x] Final LangSmith results are recorded in `evaluation/langsmith.md`.
+- [x] The public MVP URL is documented in the MVP materials.
+- [x] The strategic plan contains a four-week, single-agency pilot with weekly review and no automatic customer messaging.
+- [x] Compliance drafts distinguish assumptions, controls and production requirements from measured results.
+- [ ] Final presentation package still requires manual assembly.
+- [ ] Live pilot setup still requires agency approval and real-data controls.
 
 ## Recommended delivery order
 

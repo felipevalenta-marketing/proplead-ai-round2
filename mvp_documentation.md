@@ -1,4 +1,4 @@
-# PropLead MVP documentation
+﻿# PropLead MVP documentation
 
 ## MVP statement
 
@@ -64,7 +64,7 @@ A property can be returned only when:
 |---|---:|
 | Multilingual synthetic cases | 18 |
 | Languages | 3 |
-| Automated tests | 57/57 passing |
+| Automated tests | all current tests passing |
 | Explicit-field accuracy on current dataset | 100% |
 | Language accuracy on current dataset | 100% |
 | Exact expected matching on current dataset | 100% |
@@ -87,8 +87,7 @@ These figures describe the documented synthetic benchmark only. They do not prov
 
 ## Not yet implemented
 
-- LLM structured extraction
-- LangSmith dataset upload and experiment - complete, with the final structured-v2 result published in `evaluation/langsmith.md`
+- LLM structured extraction in the browser MVP
 - Live WhatsApp, email, social or portal integrations
 - CRM write access
 - Real customer data

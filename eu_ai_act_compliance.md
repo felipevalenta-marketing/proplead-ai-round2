@@ -1,16 +1,16 @@
-# PropLead EU AI Act assessment — draft
+﻿# PropLead EU AI Act assessment — draft
 
-> Preliminary capstone assessment, not legal advice. Classification must be reviewed if the intended purpose or deployment context changes.
+> Preliminary capstone assessment, not legal advice. This document does not claim full legal compliance.
 
 ## Intended purpose
 
 PropLead assists a real-estate sales agent by structuring an incoming enquiry, measuring information completeness, applying explicit catalogue filters and drafting a response. It does not decide whether a person may buy or rent a property, assess creditworthiness, negotiate, provide legal advice or send a message autonomously.
 
-## Preliminary risk classification
+## Likely risk classification
 
-The current use case is **not identified as an Annex III high-risk use case** because it does not evaluate creditworthiness, employment, access to public benefits, insurance risk or another listed high-risk purpose. It remains decision-support with mandatory human review.
+The current use case is best treated as a **decision-support system with mandatory human oversight**, not as an autonomous decision-maker. On the current facts, it does not look like an Annex III high-risk use case because it does not evaluate creditworthiness, employment, public-benefit access, insurance risk or another listed high-risk purpose.
 
-This conclusion must be reassessed if PropLead is extended to:
+That assessment must be revisited if PropLead is extended to:
 
 - tenant eligibility or applicant ranking;
 - creditworthiness or mortgage decisions;
@@ -25,11 +25,22 @@ This conclusion must be reassessed if PropLead is extended to:
 | AI literacy | Train agents on limits, verification and escalation before pilot use |
 | Transparency | If a buyer directly interacts with an AI assistant, disclose that it is AI; agent-reviewed drafts must not imply autonomous professional advice |
 | Human oversight | All responses stop for approve, edit, reject or escalate |
-| Data governance | Document synthetic and pilot datasets, limitations and failure coverage |
+| Logging | Retain input, output, version, flags and agent action for the pilot |
 | Accuracy | Measure by language; inspect failed cases; prohibit unsupported claims |
-| Traceability | Retain input, output, version, flags and agent action for the pilot |
-| Fundamental rights | Exclude protected attributes and prevent credit, legal or eligibility decisions |
+| Data governance | Document synthetic and pilot datasets, limitations and failure coverage |
+| Traceability | Keep trace identifiers, model versions and review actions |
 | Vendor governance | Record model/provider versions, terms, subprocessors and incident routes |
+
+## Limitations and actions before production
+
+PropLead is not ready for production use. Before any live deployment, the agency must:
+
+- confirm the final intended purpose;
+- complete a formal legal review of classification and transparency duties;
+- lock the human-oversight workflow;
+- test the logging and retention setup;
+- document model, dataset and vendor change control;
+- review whether the final scope changes the risk classification.
 
 ## Prohibited-use guardrails
 
@@ -71,4 +82,3 @@ PropLead must not:
 - Consolidated Regulation (EU) 2024/1689, current version dated 27 July 2026: https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng
 
 As of the current project date, the Commission states that the AI Act generally became applicable on 2 August 2026, including relevant transparency rules; Annex III high-risk rules apply from 2 December 2027 under the amended timeline.
-

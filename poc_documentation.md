@@ -1,4 +1,4 @@
-# PropLead Round 2 POC documentation
+﻿# PropLead Round 2 POC documentation
 
 ## Purpose
 
@@ -25,7 +25,7 @@ The POC demonstrates how one multilingual property enquiry moves from a simulate
 | `n8n/README.md` | Import and demo instructions | Complete |
 | `mvp/index.html` | Visual agent-review demonstration | Working offline |
 | `mvp/app.js` | Testable deterministic workflow engine | Working |
-| `tests/test_core.js` | Dataset and feedback regressions | 27/27 passing |
+| `tests/test_core.js` | Dataset and feedback regressions | Current browser regression suite passes |
 
 ## n8n node sequence
 
@@ -38,6 +38,8 @@ The POC demonstrates how one multilingual property enquiry moves from a simulate
 7. **Agent review queue**
 
 ## Recommended live demo
+
+Use the hosted MVP at https://proplead-ai-round2-mvp.vercel.app/ or the offline browser demo.
 
 ### Case A — Qualified Spanish lead
 
@@ -84,7 +86,7 @@ Expected evidence:
 - The default n8n path was executed locally in sequence and returned `PM-101`, a Spanish draft and the approval gate.
 - The workflow was imported into the target n8n environment and executed successfully on 3 October 2026.
 - The final `Agent review queue` output returned `PM-101`, `human_review_required: true`, `status: awaiting_agent_approval` and the actions `approve`, `edit`, `reject` and `escalate`.
-- The browser engine passes 27 automated tests.
+- The browser test suite passes in the current repository state.
 
 ## Honest limitation
 
