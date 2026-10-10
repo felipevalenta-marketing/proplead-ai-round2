@@ -40,28 +40,34 @@ setNodeCode('Simulated test inputs', String.raw`return [
   }
 ];`);
 
-setNodeCode('Normalise intake', String.raw`const allowedChannels = ['web_form', 'email', 'whatsapp', 'property_portal', 'social', 'manual'];
-const originalMessage = String($json.original_message || '');
-const normalisedMessage = originalMessage.replace(/\s+/g, ' ').trim();
-if (!normalisedMessage) throw new Error('A lead message is required');
+setNodeCode('Normalise intake', String.raw`const inputItems = $input.all();
+const allowedChannels = ['web_form', 'email', 'whatsapp', 'property_portal', 'social', 'manual'];
 
-return [{
-  json: {
-    ...$json,
-    source_channel: allowedChannels.includes($json.source_channel) ? $json.source_channel : 'manual',
-    original_message: originalMessage,
-    normalised_message: normalisedMessage,
-    received_at: $json.received_at || new Date().toISOString(),
-    consent_status: $json.consent_status || 'synthetic_demo'
-  }
-}];`);
+return inputItems.map(item => {
+  const originalMessage = String(item.json.original_message || '');
+  const normalisedMessage = originalMessage.replace(/\s+/g, ' ').trim();
+  if (!normalisedMessage) throw new Error('A lead message is required');
 
-setNodeCode('Multilingual structured lead extraction', String.raw`function fold(value) {
+  return {
+    json: {
+      ...item.json,
+      source_channel: allowedChannels.includes(item.json.source_channel) ? item.json.source_channel : 'manual',
+      original_message: originalMessage,
+      normalised_message: normalisedMessage,
+      received_at: item.json.received_at || new Date().toISOString(),
+      consent_status: item.json.consent_status || 'synthetic_demo'
+    }
+  };
+});`);
+
+setNodeCode('Multilingual structured lead extraction', String.raw`const inputItems = $input.all();
+
+function fold(value) {
   return String(value || '')
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
-    .replace(/[’'´]/g, ' ')
+    .replace(/[\u2019'\u00B4]/g, ' ')
     .replace(/[^a-z0-9]+/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
@@ -83,7 +89,7 @@ function parseBudget(text) {
     if (unit === 'm' || unit.startsWith('million')) return Math.round(Number(token.replace(',', '.')) * 1000000);
     if (unit === 'k') return Math.round(Number(token.replace(',', '.')) * 1000);
   }
-  const plainMatch = raw.match(/(?:€\s*)?(\d{1,3}(?:[.,]\d{3})+|\d+(?:[.,]\d+)?)(?:\s*(?:€|eur|euro|euros?))?/i);
+  const plainMatch = raw.match(/(?:\u20ac\s*)?(\d{1,3}(?:[.,]\d{3})+|\d+(?:[.,]\d+)?)(?:\s*(?:\u20ac|eur|euro|euros?))?/i);
   if (!plainMatch) return null;
   let token = plainMatch[1];
   if (/^\d{1,3}([.,]\d{3})+$/.test(token)) token = token.replace(/[.,]/g, '');
@@ -100,9 +106,9 @@ function extractLocations(text) {
   const normalised = fold(text);
   const rules = [
     { canonical: 'Palma', aliases: ['palma old town', 'old town palma', 'santa catalina', 'palma'] },
-    { canonical: 'Sóller', aliases: ['port de soller', 'soller'] },
-    { canonical: 'Artà', aliases: ['arta'] },
-    { canonical: 'Sant Llorenç des Cardassar', aliases: ['sant llorenc des cardassar'] },
+    { canonical: 'S\u00f3ller', aliases: ['port de soller', 'soller'] },
+    { canonical: 'Art\u00e0', aliases: ['arta'] },
+    { canonical: 'Sant Lloren\u00e7 des Cardassar', aliases: ['sant llorenc des cardassar'] },
     { canonical: 'Inca', aliases: ['inca'] },
     { canonical: 'Cala d\'Or', aliases: ['cala d or', 'cala dor'] }
   ];
@@ -178,68 +184,70 @@ function extractFeatureMentions(text) {
   };
 }
 
-const originalMessage = $json.normalised_message || $json.original_message || '';
-const detectedLanguage = detectLanguage(originalMessage);
-const budgetEur = parseBudget(originalMessage);
-const locations = extractLocations(originalMessage);
-const propertyType = extractPropertyType(originalMessage);
-const minBedrooms = extractBedrooms(originalMessage);
-const featureMentions = extractFeatureMentions(originalMessage);
+return inputItems.map(item => {
+  const originalMessage = item.json.normalised_message || item.json.original_message || '';
+  const detectedLanguage = detectLanguage(originalMessage);
+  const budgetEur = parseBudget(originalMessage);
+  const locations = extractLocations(originalMessage);
+  const propertyType = extractPropertyType(originalMessage);
+  const minBedrooms = extractBedrooms(originalMessage);
+  const featureMentions = extractFeatureMentions(originalMessage);
 
-const structuredLead = {
-  budget_eur: budgetEur,
-  locations,
-  property_type: propertyType,
-  min_bedrooms: minBedrooms,
-  timeline_months: null,
-  purpose: null,
-  financing_status: null,
-  must_have_features: featureMentions.must_have_features,
-  preferred_features: featureMentions.preferred_features,
-  catalogue_reference_date: '2026-10-03',
-  catalogue_freshness_days: 30
-};
-
-const missingFields = [];
-if (budgetEur === null) missingFields.push('budget_eur');
-if (!locations.length) missingFields.push('specific_location');
-if (!propertyType && minBedrooms === null) missingFields.push('property_type_or_bedrooms');
-
-const qualificationStatus = missingFields.length ? 'needs_information' : 'matching_ready';
-const scoreWeights = { budget_eur: 20, locations: 20, property_type: 15, min_bedrooms: 15 };
-let score = 0;
-for (const [key, weight] of Object.entries(scoreWeights)) {
-  const value = { budget_eur: budgetEur, locations, property_type: propertyType, min_bedrooms: minBedrooms }[key];
-  if (Array.isArray(value) ? value.length : value !== null) score += weight;
-}
-
-return [{
-  json: {
-    ...$json,
-    detected_language: detectedLanguage,
-    structured_lead: structuredLead,
-    must_have_features: featureMentions.must_have_features,
-    preferred_features: featureMentions.preferred_features,
+  const structuredLead = {
     budget_eur: budgetEur,
     locations,
     property_type: propertyType,
     min_bedrooms: minBedrooms,
-    missing_fields: missingFields,
-    qualification_status: qualificationStatus,
-    score,
-    priority: qualificationStatus === 'needs_information' ? 'review' : score >= 55 ? 'warm' : 'cold',
-    confidence: 'high',
-    risk_flags: []
-  }
-}];`);
+    timeline_months: null,
+    purpose: null,
+    financing_status: null,
+    must_have_features: featureMentions.must_have_features,
+    preferred_features: featureMentions.preferred_features,
+    catalogue_reference_date: '2026-10-03',
+    catalogue_freshness_days: 30
+  };
 
-setNodeCode('Deterministic qualification and escalation', String.raw`const lead = $json;
+  const missingFields = [];
+  if (budgetEur === null) missingFields.push('budget_eur');
+  if (!locations.length) missingFields.push('specific_location');
+  if (!propertyType && minBedrooms === null) missingFields.push('property_type_or_bedrooms');
+
+  const qualificationStatus = missingFields.length ? 'needs_information' : 'matching_ready';
+  const scoreWeights = { budget_eur: 20, locations: 20, property_type: 15, min_bedrooms: 15 };
+  let score = 0;
+  for (const [key, weight] of Object.entries(scoreWeights)) {
+    const value = { budget_eur: budgetEur, locations, property_type: propertyType, min_bedrooms: minBedrooms }[key];
+    if (Array.isArray(value) ? value.length : value !== null) score += weight;
+  }
+
+  return {
+    json: {
+      ...item.json,
+      detected_language: detectedLanguage,
+      structured_lead: structuredLead,
+      must_have_features: featureMentions.must_have_features,
+      preferred_features: featureMentions.preferred_features,
+      budget_eur: budgetEur,
+      locations,
+      property_type: propertyType,
+      min_bedrooms: minBedrooms,
+      missing_fields: missingFields,
+      qualification_status: qualificationStatus,
+      score,
+      priority: qualificationStatus === 'needs_information' ? 'review' : score >= 55 ? 'warm' : 'cold',
+      confidence: 'high',
+      risk_flags: []
+    }
+  };
+});`);
+
+setNodeCode('Deterministic qualification and escalation', String.raw`const inputItems = $input.all();
 const catalogue = [
   { id: 'PM-101', title: 'Palma Old Town Apartment', location: 'Palma', type: 'apartment', price_eur: 575000, bedrooms: 2, status: 'available', last_verified_at: '2026-09-29', key_features: ['balcony', 'sea view'] },
   { id: 'PM-102', title: 'Santa Catalina Townhouse', location: 'Palma', type: 'townhouse', price_eur: 820000, bedrooms: 3, status: 'available', last_verified_at: '2026-09-29', key_features: ['pool', 'parking'] },
-  { id: 'PM-103', title: 'Port de Sóller Sea View Apartment', location: 'Sóller', type: 'apartment', price_eur: 760000, bedrooms: 2, status: 'available', last_verified_at: '2026-09-29', key_features: ['sea view', 'balcony'] },
-  { id: 'PM-104', title: 'Artà Stone Finca', location: 'Artà', type: 'finca', price_eur: 1390000, bedrooms: 4, status: 'available', last_verified_at: '2026-09-29', key_features: ['pool', 'tourist licence'] },
-  { id: 'PM-105', title: 'Sant Llorenç Townhouse', location: 'Sant Llorenç des Cardassar', type: 'townhouse', price_eur: 450000, bedrooms: 3, status: 'available', last_verified_at: '2026-09-29', key_features: ['pool', 'parking'] },
+  { id: 'PM-103', title: 'Port de S\u00f3ller Sea View Apartment', location: 'S\u00f3ller', type: 'apartment', price_eur: 760000, bedrooms: 2, status: 'available', last_verified_at: '2026-09-29', key_features: ['sea view', 'balcony'] },
+  { id: 'PM-104', title: 'Art\u00e0 Stone Finca', location: 'Art?', type: 'finca', price_eur: 1390000, bedrooms: 4, status: 'available', last_verified_at: '2026-09-29', key_features: ['pool', 'tourist licence'] },
+  { id: 'PM-105', title: 'Sant Lloren\u00e7 Townhouse', location: 'Sant Lloren\u00e7 des Cardassar', type: 'townhouse', price_eur: 450000, bedrooms: 3, status: 'available', last_verified_at: '2026-09-29', key_features: ['pool', 'parking'] },
   { id: 'PM-108', title: 'Inca Renovation House', location: 'Inca', type: 'townhouse', price_eur: 320000, bedrooms: 3, status: 'available', last_verified_at: '2026-09-29', key_features: ['renovation'] }
 ];
 
@@ -271,47 +279,43 @@ function locationCompatible(leadLocations, propertyLocation) {
   return leadLocations.some(location => fold(location) === propertyFolded);
 }
 
-function matches(property, leadData) {
-  if (property.status !== 'available') return false;
-  if (leadData.budget_eur !== null && property.price_eur > leadData.budget_eur) return false;
-  if (!locationCompatible(leadData.locations, property.location)) return false;
-  if (!typeCompatible(leadData.property_type, property.type)) return false;
-  if (leadData.min_bedrooms !== null && property.bedrooms < leadData.min_bedrooms) return false;
-  if (!leadData.must_have_features.every(feature => hasFeature(property, feature))) return false;
-  return true;
-}
+return inputItems.map(item => {
+  const lead = item.json;
+  const matchesFound = lead.qualification_status === 'matching_ready'
+    ? catalogue.filter(property => {
+        if (property.status !== 'available') return false;
+        if (lead.budget_eur !== null && property.price_eur > lead.budget_eur) return false;
+        if (!locationCompatible(lead.locations, property.location)) return false;
+        if (!typeCompatible(lead.property_type, property.type)) return false;
+        if (lead.min_bedrooms !== null && property.bedrooms < lead.min_bedrooms) return false;
+        if (!lead.must_have_features.every(feature => hasFeature(property, feature))) return false;
+        return true;
+      }).sort((left, right) => {
+        const preferenceDelta = lead.preferred_features.reduce((score, feature) => score + (hasFeature(right, feature) ? 1 : 0), 0) - lead.preferred_features.reduce((score, feature) => score + (hasFeature(left, feature) ? 1 : 0), 0);
+        if (preferenceDelta !== 0) return preferenceDelta;
+        return left.price_eur - right.price_eur;
+      })
+    : [];
 
-function preferenceScore(property, preferredFeatures) {
-  return preferredFeatures.reduce((score, feature) => score + (hasFeature(property, feature) ? 1 : 0), 0);
-}
+  const compatiblePropertyIds = matchesFound.map(property => property.id);
+  const escalationReasons = [...lead.missing_fields].map(field => field === 'budget_eur' ? 'missing_budget_eur' : field === 'specific_location' ? 'missing_specific_location' : field === 'property_type_or_bedrooms' ? 'missing_property_type_or_bedrooms' : field);
+  if (lead.qualification_status === 'matching_ready' && compatiblePropertyIds.length === 0) escalationReasons.push('no_catalogue_match');
 
-const matchesFound = lead.qualification_status === 'matching_ready'
-  ? catalogue.filter(property => matches(property, lead.structured_lead)).sort((left, right) => {
-      const preferenceDelta = preferenceScore(right, lead.structured_lead.preferred_features) - preferenceScore(left, lead.structured_lead.preferred_features);
-      if (preferenceDelta !== 0) return preferenceDelta;
-      return left.price_eur - right.price_eur;
-    })
-  : [];
-
-const compatiblePropertyIds = matchesFound.map(property => property.id);
-const escalationReasons = [...lead.missing_fields].map(field => field === 'budget_eur' ? 'missing_budget_eur' : field === 'specific_location' ? 'missing_specific_location' : field === 'property_type_or_bedrooms' ? 'missing_property_type_or_bedrooms' : field);
-if (lead.qualification_status === 'matching_ready' && compatiblePropertyIds.length === 0) escalationReasons.push('no_catalogue_match');
-
-return [{
-  json: {
-    ...lead,
-    matched_properties: matchesFound,
-    compatible_property_ids: compatiblePropertyIds,
-    must_escalate: escalationReasons.length > 0,
-    escalation_reasons: escalationReasons
-  }
-}];`);
+  return {
+    json: {
+      ...lead,
+      matched_properties: matchesFound,
+      compatible_property_ids: compatiblePropertyIds,
+      must_escalate: escalationReasons.length > 0,
+      escalation_reasons: escalationReasons
+    }
+  };
+});`);
 
 
-setNodeCode('Controlled catalogue matching', String.raw`const lead = $json;
+setNodeCode('Controlled catalogue matching', String.raw`const inputItems = $input.all();
 const referenceDate = Date.parse('2026-10-03T00:00:00Z');
 const freshnessDays = 30;
-const structuredLead = lead.structured_lead;
 
 const catalogue = [
   { id: 'PM-101', title: 'Palma Old Town Apartment', location: 'Palma', type: 'apartment', price_eur: 575000, bedrooms: 2, status: 'available', last_verified_at: '2026-09-29', key_features: ['renovated', 'balcony', 'central'] },
@@ -359,104 +363,96 @@ function hasFeature(property, feature) {
   return property.key_features.some(item => fold(item) === fold(feature));
 }
 
-function matches(property, leadData) {
-  if (property.status !== 'available') return false;
-  if (!isFresh(property)) return false;
-  if (leadData.budget_eur !== null && property.price_eur > leadData.budget_eur) return false;
-  if (!locationCompatible(leadData.locations, property.location)) return false;
-  if (!typeCompatible(leadData.property_type, property.type)) return false;
-  if (leadData.min_bedrooms !== null && property.bedrooms < leadData.min_bedrooms) return false;
-  if (!leadData.must_have_features.every(feature => hasFeature(property, feature))) return false;
-  return true;
-}
+return inputItems.map(item => {
+  const lead = item.json;
+  const matchesFound = lead.qualification_status === 'matching_ready'
+    ? catalogue.filter(property => {
+        if (property.status !== 'available') return false;
+        if (!isFresh(property)) return false;
+        if (lead.budget_eur !== null && property.price_eur > lead.budget_eur) return false;
+        if (!locationCompatible(lead.locations, property.location)) return false;
+        if (!typeCompatible(lead.property_type, property.type)) return false;
+        if (lead.min_bedrooms !== null && property.bedrooms < lead.min_bedrooms) return false;
+        if (!lead.must_have_features.every(feature => hasFeature(property, feature))) return false;
+        return true;
+      }).sort((left, right) => {
+        const preferenceDelta = lead.preferred_features.reduce((score, feature) => score + (hasFeature(right, feature) ? 1 : 0), 0) - lead.preferred_features.reduce((score, feature) => score + (hasFeature(left, feature) ? 1 : 0), 0);
+        if (preferenceDelta !== 0) return preferenceDelta;
+        return left.price_eur - right.price_eur;
+      })
+    : [];
 
-function preferenceScore(property, preferredFeatures) {
-  return preferredFeatures.reduce((score, feature) => score + (hasFeature(property, feature) ? 1 : 0), 0);
-}
-
-const matchesFound = lead.qualification_status === 'matching_ready'
-  ? catalogue.filter(property => matches(property, structuredLead)).sort((left, right) => {
-      const preferenceDelta = preferenceScore(right, structuredLead.preferred_features) - preferenceScore(left, structuredLead.preferred_features);
-      if (preferenceDelta !== 0) return preferenceDelta;
-      return left.price_eur - right.price_eur;
-    })
-  : [];
-
-const compatiblePropertyIds = matchesFound.map(property => property.id);
-const escalationReasons = [...lead.escalation_reasons];
-if (lead.qualification_status === 'matching_ready' && compatiblePropertyIds.length === 0) {
-  escalationReasons.push('no_catalogue_match');
-}
-
-return [{
-  json: {
-    ...lead,
-    matched_properties: matchesFound,
-    compatible_property_ids: compatiblePropertyIds,
-    must_escalate: escalationReasons.length > 0,
-    escalation_reasons: escalationReasons
+  const compatiblePropertyIds = matchesFound.map(property => property.id);
+  const escalationReasons = [...lead.escalation_reasons];
+  if (lead.qualification_status === 'matching_ready' && compatiblePropertyIds.length === 0) {
+    escalationReasons.push('no_catalogue_match');
   }
-}];`);
 
-setNodeCode('Multilingual response-draft preparation', String.raw`const lead = $json;
-const language = lead.detected_language;
-const matchCount = lead.compatible_property_ids.length;
-let responseDraft = '';
+  return {
+    json: {
+      ...lead,
+      matched_properties: matchesFound,
+      compatible_property_ids: compatiblePropertyIds,
+      must_escalate: escalationReasons.length > 0,
+      escalation_reasons: escalationReasons
+    }
+  };
+});`);
 
-if (language === 'es') {
-  if (lead.qualification_status === 'needs_information') {
-    responseDraft = 'Gracias por su consulta. Para continuar, necesitamos confirmar ' + lead.missing_fields.join(', ') + '. Un agente revisará la información y responderá después de la aprobación humana.';
-  } else if (matchCount) {
-    responseDraft = 'Gracias por su consulta. Hemos identificado ' + matchCount + ' opción' + (matchCount === 1 ? '' : 'es') + ' compatible' + (matchCount === 1 ? '' : 's') + ': ' + lead.compatible_property_ids.join(', ') + '. Un agente comprobará la información y revisará el mensaje antes de responder.';
+setNodeCode('Multilingual response-draft preparation', String.raw`const inputItems = $input.all();
+
+return inputItems.map(item => {
+  const lead = item.json;
+  const language = lead.detected_language;
+  const matchCount = lead.compatible_property_ids.length;
+  let responseDraft = '';
+
+  if (language === 'es') {
+    if (lead.qualification_status === 'needs_information') {
+      responseDraft = 'Gracias por su consulta. Para continuar, necesitamos confirmar ' + lead.missing_fields.join(', ') + '. Un agente revisar\u00e1 la informaci\u00f3n y responder\u00e1 despu\u00e9s de la aprobaci\u00f3n humana.';
+    } else if (matchCount) {
+      responseDraft = 'Gracias por su consulta. Hemos identificado ' + matchCount + ' opci\u00f3n' + (matchCount === 1 ? '' : 'es') + ' compatible' + (matchCount === 1 ? '' : 's') + ': ' + lead.compatible_property_ids.join(', ') + '. Un agente comprobar\u00e1 la informaci\u00f3n y revisar\u00e1 el mensaje antes de responder.';
+    } else {
+      responseDraft = 'Gracias por su consulta. No hemos encontrado una coincidencia fiable en el cat\u00e1logo controlado. Un agente revisar\u00e1 la informaci\u00f3n antes de responder.';
+    }
+  } else if (language === 'de') {
+    if (lead.qualification_status === 'needs_information') {
+      responseDraft = 'Vielen Dank f\u00fcr Ihre Anfrage. Bitte best\u00e4tigen Sie ' + lead.missing_fields.join(', ') + '. Ein Makler pr\u00fcft die Informationen und best\u00e4tigt die Verf\u00fcgbarkeit, bevor wir antworten.';
+    } else if (matchCount) {
+      responseDraft = 'Vielen Dank f\u00fcr Ihre Anfrage. Wir haben ' + matchCount + ' passende Option' + (matchCount === 1 ? '' : 'en') + ' gefunden: ' + lead.compatible_property_ids.join(', ') + '. Ein Makler pr\u00fcft die Verf\u00fcgbarkeit und die Informationen, bevor wir antworten.';
+    } else {
+      responseDraft = 'Vielen Dank f\u00fcr Ihre Anfrage. Im kontrollierten Katalog wurde keine verl\u00e4ssliche \u00dcbereinstimmung gefunden. Ein Makler pr\u00fcft die Informationen vor einer Antwort.';
+    }
   } else {
-    responseDraft = 'Gracias por su consulta. No hemos encontrado una coincidencia fiable en el catálogo controlado. Un agente revisará la información antes de responder.';
+    if (lead.qualification_status === 'needs_information') {
+      responseDraft = 'Thank you for your enquiry. Please confirm ' + lead.missing_fields.join(', ') + '. An agent will review the information before any reply is sent.';
+    } else if (matchCount) {
+      responseDraft = 'Thank you for your enquiry. We found ' + matchCount + ' compatible option' + (matchCount === 1 ? '' : 's') + ': ' + lead.compatible_property_ids.join(', ') + '. An agent will review the information before any reply is sent.';
+    } else {
+      responseDraft = 'Thank you for your enquiry. No reliable match was found in the controlled catalogue. An agent will review the information before any reply is sent.';
+    }
   }
-} else if (language === 'de') {
-  if (lead.qualification_status === 'needs_information') {
-    responseDraft = 'Vielen Dank für Ihre Anfrage. Bitte bestätigen Sie ' + lead.missing_fields.join(', ') + '. Ein Makler prüft die Informationen und bestätigt die Verfügbarkeit, bevor wir antworten.';
-  } else if (matchCount) {
-    responseDraft = 'Vielen Dank für Ihre Anfrage. Wir haben ' + matchCount + ' passende Option' + (matchCount === 1 ? '' : 'en') + ' gefunden: ' + lead.compatible_property_ids.join(', ') + '. Ein Makler prüft die Verfügbarkeit und die Informationen, bevor wir antworten.';
-  } else {
-    responseDraft = 'Vielen Dank für Ihre Anfrage. Im kontrollierten Katalog wurde keine verlässliche Übereinstimmung gefunden. Ein Makler prüft die Informationen vor einer Antwort.';
-  }
-} else {
-  if (lead.qualification_status === 'needs_information') {
-    responseDraft = 'Thank you for your enquiry. Please confirm ' + lead.missing_fields.join(', ') + '. An agent will review the information before any reply is sent.';
-  } else if (matchCount) {
-    responseDraft = 'Thank you for your enquiry. We found ' + matchCount + ' compatible option' + (matchCount === 1 ? '' : 's') + ': ' + lead.compatible_property_ids.join(', ') + '. An agent will review the information before any reply is sent.';
-  } else {
-    responseDraft = 'Thank you for your enquiry. No reliable match was found in the controlled catalogue. An agent will review the information before any reply is sent.';
-  }
-}
 
-return [{
-  json: {
-    ...lead,
-    response_draft: responseDraft
-  }
-}];`);
+  return {
+    json: {
+      ...lead,
+      response_draft: responseDraft
+    }
+  };
+});`);
 
-setNodeCode('Agent review queue', String.raw`return [{
-  json: {
-    original_message: $json.original_message,
-    source_channel: $json.source_channel,
-    detected_language: $json.detected_language,
-    budget_eur: $json.budget_eur,
-    locations: $json.locations,
-    property_type: $json.property_type,
-    min_bedrooms: $json.min_bedrooms,
-    structured_lead: $json.structured_lead,
-    must_have_features: $json.must_have_features,
-    preferred_features: $json.preferred_features,
-    compatible_property_ids: $json.compatible_property_ids,
-    qualification_status: $json.qualification_status,
-    must_escalate: $json.must_escalate,
-    escalation_reasons: $json.escalation_reasons,
-    response_draft: $json.response_draft,
-    human_review_required: true,
-    status: 'awaiting_agent_approval'
-  }
-}];`);
+setNodeCode('Agent review queue', String.raw`const inputItems = $input.all();
+
+return inputItems.map(item => {
+  const lead = item.json;
+  return {
+    json: {
+      ...lead,
+      human_review_required: true,
+      status: 'awaiting_agent_approval'
+    }
+  };
+});`);
 
 fs.writeFileSync(file, JSON.stringify(workflow, null, 2) + '\n', 'utf8');
 

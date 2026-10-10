@@ -1,4 +1,4 @@
-﻿const test = require('node:test');
+const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
@@ -13,11 +13,13 @@ function codeNode(name) {
   return node;
 }
 
-function runNode(code, input) {
-  return new Function('$json', code)(input);
+function runNode(code, items) {
+  return new Function('$input', code)({
+    all: () => items
+  });
 }
 
-function runWorkflow(input) {
+function runSimulatedWorkflow() {
   const stepNames = [
     'Normalise intake',
     'Multilingual structured lead extraction',
@@ -27,24 +29,24 @@ function runWorkflow(input) {
     'Agent review queue'
   ];
 
-  let items = [{ json: input }];
+  let items = runNode(codeNode('Simulated test inputs').parameters.jsCode, []);
+  const counts = [items.length];
+  const demoCases = [items.map(item => item.json.demo_case)];
+
   for (const name of stepNames) {
-    const nextItems = [];
-    const code = codeNode(name).parameters.jsCode;
-    for (const item of items) {
-      const output = runNode(code, item.json);
-      for (const entry of output) nextItems.push(entry);
-    }
-    items = nextItems;
+    items = runNode(codeNode(name).parameters.jsCode, items);
+    counts.push(items.length);
+    demoCases.push(items.map(item => item.json.demo_case));
   }
-  return items.map(item => item.json);
+
+  return { items, counts, demoCases };
 }
 
 test('n8n workflow JSON round-trips cleanly', () => {
   const parsed = JSON.parse(fs.readFileSync(WORKFLOW_FILE, 'utf8'));
   const roundTripped = JSON.parse(JSON.stringify(parsed));
   assert.deepEqual(roundTripped, parsed);
-  assert.equal(parsed.name, 'PropLead AI — Round 2 POC v2');
+  assert.equal(parsed.name, 'PropLead AI \u2014 Round 2 POC v2');
 });
 
 test('parsed workflow preserves controlled matching regex escapes', () => {
@@ -55,15 +57,20 @@ test('parsed workflow preserves controlled matching regex escapes', () => {
   assert.ok(node.parameters.jsCode.includes('Port de S\\u00f3ller'), 'catalogue matching code retains the canonical location');
 });
 
-test('Spanish regression keeps the original message and matches PM-101', () => {
-  const input = {
-    source_channel: 'whatsapp',
-    source_message_id: 'wa-regression-es-001',
-    original_message: 'Hola, busco un apartamento en Palma con balcón y preferiblemente vista al mar. Mi presupuesto es de 600000 euros.'
-  };
-  const [result] = runWorkflow(input);
+test('simulated inputs survive every downstream node and preserve order', () => {
+  const { counts, demoCases } = runSimulatedWorkflow();
+  assert.deepEqual(counts, [2, 2, 2, 2, 2, 2, 2]);
+  for (const cases of demoCases) {
+    assert.deepEqual(cases, ['es-qualified-match', 'de-escalation']);
+  }
+});
 
-  assert.equal(result.original_message, input.original_message);
+test('Spanish regression keeps the original message and matches PM-101', () => {
+  const { items } = runSimulatedWorkflow();
+  const result = items.find(item => item.json.demo_case === 'es-qualified-match').json;
+
+  assert.equal(result.demo_case, 'es-qualified-match');
+  assert.equal(result.original_message, 'Hola, busco un apartamento en Palma con balc\u00f3n y preferiblemente vista al mar. Mi presupuesto es de 600000 euros.');
   assert.equal(result.detected_language, 'es');
   assert.equal(result.budget_eur, 600000);
   assert.deepEqual(result.locations, ['Palma']);
@@ -78,15 +85,19 @@ test('Spanish regression keeps the original message and matches PM-101', () => {
 });
 
 test('German missing-budget case still escalates deterministically', () => {
-  const [result] = runWorkflow({
-    source_channel: 'email',
-    source_message_id: 'em-regression-de-001',
-    original_message: 'Ich suche eine Wohnung mit zwei Schlafzimmern in Palma.'
-  });
+  const { items } = runSimulatedWorkflow();
+  const result = items.find(item => item.json.demo_case === 'de-escalation').json;
 
+  assert.equal(result.demo_case, 'de-escalation');
   assert.equal(result.detected_language, 'de');
+  assert.equal(result.budget_eur, null);
+  assert.deepEqual(result.locations, ['Palma']);
+  assert.equal(result.property_type, 'apartment');
+  assert.equal(result.min_bedrooms, 2);
+  assert.deepEqual(result.compatible_property_ids, []);
   assert.equal(result.must_escalate, true);
   assert.ok(result.escalation_reasons.includes('missing_budget_eur'));
+  assert.match(result.response_draft, /Vielen Dank f\u00fcr Ihre Anfrage/);
   assert.equal(result.human_review_required, true);
   assert.equal(result.status, 'awaiting_agent_approval');
 });
