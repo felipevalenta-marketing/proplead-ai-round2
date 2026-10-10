@@ -15,14 +15,16 @@
 
 ## Exact demonstration order
 
-1. Open the deployed browser MVP: https://proplead-ai-round2-mvp.vercel.app/
-2. Show the lead review screen and explain the one-screen workflow.
-3. Run one multilingual enquiry through the browser MVP.
-4. Show the extracted fields, the matched property and the review state.
-5. Point out that no customer message is sent automatically.
-6. Switch to `evaluation/langsmith.md` and show v1 versus final hybrid v2.
-7. Show the n8n proof-of-concept evidence.
-8. End on `strategic_plan.md` and the four-week pilot.
+1. Start with slide 1 and introduce PropLead AI for a Mallorca microagency.
+2. Move to slide 2 and explain the business problem: multilingual enquiries, manual qualification, missing data and safe catalogue matching.
+3. Use slide 3 to explain Round 1 feedback and how Round 2 narrowed the scope.
+4. Use slide 4 to separate the browser MVP, the n8n POC and the LangSmith hybrid extractor.
+5. On slide 5, explain the workflow diagram first, then switch to the deployed browser MVP.
+6. Run one multilingual enquiry through the browser MVP and show the extracted fields, the matched property and the review state.
+7. Point out that no customer message is sent automatically.
+8. Switch to `evaluation/langsmith.md` and show v1 versus final hybrid v2.
+9. Show the n8n proof-of-concept evidence.
+10. End on `strategic_plan.md` and the four-week pilot.
 
 ## Recommended multilingual test inquiry
 

@@ -21,9 +21,9 @@ PropLead AI solves a practical agency problem. A small Mallorca team receives en
 
 **Approx. speaking time:** 45–55 seconds
 
-## 2) Round 1 feedback and what changed
+## 2) The business problem
 
-**Slide title:** What changed after Round 1
+**Slide title:** The business problem
 
 **On-slide content:**
 - Kept the same real-estate lead use case
@@ -42,9 +42,9 @@ Round 1 feedback did not kill the idea. It sharpened it. The project kept the sa
 
 **Approx. speaking time:** 50–60 seconds
 
-## 3) Final MVP scope
+## 3) What changed after Round 1
 
-**Slide title:** What the final MVP actually does
+**Slide title:** What changed after Round 1
 
 **On-slide content:**
 - Accepts simulated, standardised lead sources
@@ -64,9 +64,9 @@ The browser MVP is deterministic and local. It uses synthetic property data and 
 
 **Approx. speaking time:** 55–65 seconds
 
-## 4) Lead-intake and decision-support workflow
+## 4) Three proof layers
 
-**Slide title:** Lead intake, matching and review
+**Slide title:** Three proof layers
 
 **On-slide content:**
 - Simulated intake sources: web form, email, WhatsApp, portal, social and manual
@@ -101,10 +101,10 @@ The workflow is built around decision support. It normalises the incoming messag
 - Live `https://proplead-ai-round2-mvp.vercel.app/`
 
 **Speaker notes:**
-This is the public MVP demo. It shows the practical workflow without any live API dependency in the browser experience. The data is documented synthetic data, so the demo is safe for the capstone. I will enter one multilingual enquiry, show the extracted fields, the match result and the review state.
+This is the public MVP demo. First, briefly explain the workflow diagram from the previous slide so the audience sees the full decision path. Then switch to the deployed browser MVP. The demo shows the practical workflow without any live API dependency in the browser experience. The data is documented synthetic data, so the demo is safe for the capstone. I will enter one multilingual enquiry, show the extracted fields, the match result and the review state.
 
 **What to show on screen:**
-- The deployed MVP URL, then the matched lead panel
+- Explain the workflow diagram first, then open the deployed MVP URL and the matched lead panel
 
 **Approx. speaking time:** 75–90 seconds
 

@@ -133,11 +133,11 @@ def add_footer(draw, slide_no: int):
     draw.text((tx, ty), slide_tag, font=f(18, bold=True), fill=hexrgb(WHITE))
 
 
-def title_block(draw, title, subtitle=None):
-    draw.text((90, 70), title, font=f(50, bold=True), fill=hexrgb(WHITE))
-    draw.line((90, 145, 520, 145), fill=hexrgb(TEAL), width=5)
+def title_block(draw, title, subtitle=None, x=90, y=70, font_size=50, line_end=520, subtitle_y=160):
+    draw.text((x, y), title, font=f(font_size, bold=True), fill=hexrgb(WHITE))
+    draw.line((x, 145, line_end, 145), fill=hexrgb(TEAL), width=5)
     if subtitle:
-        draw.text((90, 160), subtitle, font=f(24), fill=hexrgb("#D6E1EA"))
+        draw.text((x, subtitle_y), subtitle, font=f(24), fill=hexrgb("#D6E1EA"))
 
 
 def badge(draw, x, y, text, fill=SLATE, outline=TEAL, width=2, text_fill=WHITE, pad_x=24, pad_y=12, radius=22, font_size=20):
@@ -343,7 +343,10 @@ def build_slide_images(build_dir: Path) -> list[SlideAsset]:
     for sec in sections:
         img = make_canvas()
         draw = ImageDraw.Draw(img)
-        title_block(draw, sec["title"], "PropLead AI • Ironhack Round 2")
+        if sec["num"] == 3:
+            title_block(draw, sec["title"], "PropLead AI • Ironhack Round 2", x=112, font_size=48, line_end=560)
+        else:
+            title_block(draw, sec["title"], "PropLead AI • Ironhack Round 2")
         badge(draw, 1490, 62, "Deployed MVP + POC + Evaluation", fill=SLATE, outline=TEAL)
         if sec["num"] == 1:
             draw.text((90, 245), "Multilingual lead qualification for a Mallorca microagency", font=f(30), fill=hexrgb("#D6E1EA"))
@@ -489,7 +492,7 @@ def build_slide_images(build_dir: Path) -> list[SlideAsset]:
             card(draw, (170, 710, 1750, 930), "Pilot conclusion", [
                 "No automatic customer messaging during the pilot. Scale only if safety, usability and ROI support it.",
             ], fill=CARD, outline=TEAL, title_fill=TEXT, body_fill=TEXT_SOFT, title_size=28, body_size=24, body_top_offset=74)
-            badge(draw, 170, 950, "Recommended next step: final presentation + safe pilot approval", fill=SLATE, outline=GREEN, font_size=22)
+            badge(draw, 170, 950, "Recommended next step: controlled pilot approval", fill=SLATE, outline=GREEN, font_size=22)
         else:
             draw.text((100, 300), "Unhandled slide", font=f(36), fill=hexrgb(WHITE))
 
