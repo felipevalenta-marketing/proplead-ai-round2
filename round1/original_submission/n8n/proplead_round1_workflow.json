@@ -1,0 +1,64 @@
+{
+  "name": "PropLead AI - Round 1 Transparent POC",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "manual-trigger",
+      "name": "Manual trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [0, 260]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: { inquiry: 'Hello, I am looking for a 2-bedroom apartment in Palma. My budget is €800k and I would like to buy within three months. I will finance part of the purchase.' } }];"
+      },
+      "id": "sample-enquiry",
+      "name": "Sample enquiry",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [220, 260]
+    },
+    {
+      "parameters": {
+        "jsCode": "const text = $json.inquiry || '';\nconst lower = text.toLowerCase();\nconst language = /\\b(hallo|ich|suche|wohnung|haus)\\b/i.test(text) ? 'German' : /\\b(hola|busco|presupuesto|piso|casa|habitaciones)\\b/i.test(text) ? 'Spanish' : 'English';\nfunction parseBudget(s) {\n  const m = s.match(/(?:€|eur\\s*)?([0-9]+(?:[.,][0-9]+)?)\\s*(m|million|k)?/i);\n  if (!m) return null;\n  const suffix = (m[2] || '').toLowerCase();\n  const token = m[1];\n  let n;\n  if (suffix === 'm' || suffix === 'million') n = Number(token.replace(',', '.')) * 1000000;\n  else if (suffix === 'k') n = Number(token.replace(',', '.')) * 1000;\n  else n = Number(token.replace(/[.,](?=\\d{3}\\b)/g, '').replace(',', '.'));\n  if (!Number.isFinite(n) || n < 100000) return null;\n  return Math.round(n);\n}\nconst euroMatch = text.match(/(?:€\\s*[0-9][0-9.,]*\\s*(?:m|k)?|[0-9][0-9.,]*\\s*(?:million|m|k)\\s*(?:euros?|eur)?)/i);\nconst budget = euroMatch ? parseBudget(euroMatch[0]) : null;\nconst areas = ['Palma','Sóller','Artà','Sant Llorenç des Cardassar','Cala d\\'Or','Inca'];\nconst location = areas.find(a => lower.includes(a.toLowerCase())) || null;\nconst types = ['apartment','townhouse','villa','finca'];\nconst aliases = { apartment: ['apartment','flat','piso','wohnung'], townhouse: ['townhouse','casa de pueblo','stadthaus','house'], villa: ['villa'], finca: ['finca','country house','landhaus'] };\nconst propertyType = types.find(t => aliases[t].some(a => lower.includes(a))) || null;\nconst bedroomMatch = lower.match(/(\\d+)[\\s-]*(?:bed|bedroom|habitaci|schlafzimmer)/);\nconst bedrooms = bedroomMatch ? Number(bedroomMatch[1]) : null;\nconst timeline = /three months|3 months|tres meses|drei monaten/.test(lower) ? 'Within 3 months' : /six months|6 months|seis meses|sechs monaten/.test(lower) ? 'Within 6 months' : null;\nconst financing = /finance|mortgage|hipoteca|finanzier/.test(lower) ? 'Financing mentioned' : null;\nconst purpose = /invest|rental|rent|inversi|anlage/.test(lower) ? 'Investment' : /home|live|vivir|wohnen/.test(lower) ? 'Own use' : null;\nconst fields = { budget, location, propertyType, bedrooms, timeline, financing, purpose };\nconst weights = { budget: 25, location: 20, propertyType: 15, bedrooms: 15, timeline: 15, financing: 10 };\nlet score = 0;\nfor (const [key, weight] of Object.entries(weights)) if (fields[key] !== null) score += weight;\nconst priority = score >= 70 ? 'Hot' : score >= 45 ? 'Warm' : 'Cold';\nconst missing = Object.entries(fields).filter(([k,v]) => v === null && ['budget','location','propertyType','bedrooms','timeline'].includes(k)).map(([k]) => k);\nreturn [{ json: { inquiry: text, language, ...fields, score, priority, missing } }];"
+      },
+      "id": "extract-score",
+      "name": "Extract and score lead",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 260]
+    },
+    {
+      "parameters": {
+        "jsCode": "const lead = $json;\nconst properties = [\n {id:'PM-101',title:'Palma Old Town Apartment',location:'Palma',type:'apartment',price:575000,bedrooms:2,features:['renovated','balcony','central']},\n {id:'PM-102',title:'Santa Catalina Townhouse',location:'Palma',type:'townhouse',price:895000,bedrooms:3,features:['terrace','character property','central']},\n {id:'PM-103',title:'Port de Sóller Sea View Apartment',location:'Sóller',type:'apartment',price:760000,bedrooms:2,features:['sea view','terrace','lift']},\n {id:'PM-104',title:'Artà Stone Finca',location:'Artà',type:'finca',price:1390000,bedrooms:4,features:['tourist licence','pool','solar energy']},\n {id:'PM-105',title:'Sant Llorenç Townhouse',location:'Sant Llorenç des Cardassar',type:'townhouse',price:435000,bedrooms:2,features:['pool','terrace','licence']},\n {id:'PM-106',title:\"Cala d'Or Frontline Apartment\",location:\"Cala d'Or\",type:'apartment',price:290000,bedrooms:2,features:['sea front','renovation opportunity']},\n {id:'PM-107',title:'Palma Family Villa',location:'Palma',type:'villa',price:1250000,bedrooms:4,features:['pool','parking','garden']},\n {id:'PM-108',title:'Inca Renovation House',location:'Inca',type:'townhouse',price:320000,bedrooms:3,features:['renovation','patio','investment potential']}\n];\nconst needsLicence = /tourist|holiday rental|licen[cs]e|licencia|ferienvermiet/.test(lead.inquiry.toLowerCase());\nconst matches = properties.filter(p =>\n  (!lead.budget || p.price <= lead.budget) &&\n  (!lead.location || p.location.toLowerCase().includes(lead.location.toLowerCase())) &&\n  (!lead.propertyType || p.type === lead.propertyType) &&\n  (!lead.bedrooms || p.bedrooms >= lead.bedrooms) &&\n  (!needsLicence || p.features.some(f => f.includes('licence')))\n).map(p => ({...p, matchReason: 'Compatible with the stated budget and core requirements'})).slice(0,3);\nconst humanReview = lead.missing.includes('budget') || lead.missing.includes('location') || matches.length === 0;\nreturn [{ json: { ...lead, matches, humanReview } }];"
+      },
+      "id": "property-matching",
+      "name": "Match properties",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [720, 260]
+    },
+    {
+      "parameters": {
+        "jsCode": "const lead = $json;\nconst missingText = lead.missing.length ? ` Missing information: ${lead.missing.join(', ')}.` : '';\nconst matchText = lead.matches.length ? ` Suggested properties: ${lead.matches.map(p => p.id + ' ' + p.title).join('; ')}.` : ' No compatible property was found.';\nconst opening = lead.language === 'German' ? 'Vielen Dank für Ihre Anfrage.' : lead.language === 'Spanish' ? 'Gracias por su consulta.' : 'Thank you for your enquiry.';\nconst draftReply = `${opening}${missingText}${matchText} An agent will review this information before replying.`;\nreturn [{ json: { leadSummary: { language: lead.language, budget: lead.budget, location: lead.location, propertyType: lead.propertyType, bedrooms: lead.bedrooms, timeline: lead.timeline }, score: lead.score, priority: lead.priority, missing: lead.missing, matches: lead.matches, humanReview: true, draftReply, status: 'Awaiting agent approval' } }];"
+      },
+      "id": "review-queue",
+      "name": "Agent review queue",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [980, 260]
+    }
+  ],
+  "connections": {
+    "Manual trigger": { "main": [[{ "node": "Sample enquiry", "type": "main", "index": 0 }]] },
+    "Sample enquiry": { "main": [[{ "node": "Extract and score lead", "type": "main", "index": 0 }]] },
+    "Extract and score lead": { "main": [[{ "node": "Match properties", "type": "main", "index": 0 }]] },
+    "Match properties": { "main": [[{ "node": "Agent review queue", "type": "main", "index": 0 }]] }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "versionId": "7a042594-168d-4ae6-80f0-6f9098c07691",
+  "meta": { "templateCredsSetupCompleted": true },
+  "tags": []
+}

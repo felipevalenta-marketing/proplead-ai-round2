@@ -1,0 +1,16 @@
+metric_group,category,value,unit,data_type
+lead_language,English,24,leads_per_month,synthetic
+lead_language,German,18,leads_per_month,synthetic
+lead_language,Spanish,12,leads_per_month,synthetic
+lead_language,Other,6,leads_per_month,synthetic
+lead_channel,WhatsApp,26,leads_per_month,synthetic
+lead_channel,Web form,18,leads_per_month,synthetic
+lead_channel,Email,16,leads_per_month,synthetic
+missing_field,Financing status,72,percent_of_enquiries,synthetic
+missing_field,Purchase timeline,62,percent_of_enquiries,synthetic
+missing_field,Budget,45,percent_of_enquiries,synthetic
+missing_field,Preferred area,28,percent_of_enquiries,synthetic
+missing_field,Property type,12,percent_of_enquiries,synthetic
+manual_response_time,WhatsApp,47,minutes_median,synthetic
+manual_response_time,Web form,130,minutes_median,synthetic
+manual_response_time,Email,220,minutes_median,synthetic
