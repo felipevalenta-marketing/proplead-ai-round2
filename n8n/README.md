@@ -1,41 +1,26 @@
-# PropLead Round 2 n8n POC
+﻿# PropLead Round 2 n8n POC
 
-## What it proves
+## Quick start
 
-The importable workflow demonstrates the controlled automation sequence:
+1. Import `n8n/proplead_round2_poc.json` into n8n.
+2. Run the `Manual trigger` entry point.
+3. Review the final `Agent review queue` output.
 
-1. Simulated multichannel input
-2. Standardised intake record
-3. Multilingual field extraction
-4. Missing-data and qualification gate
-5. Availability-aware property matching
-6. One-language response or clarification draft
-7. Mandatory agent review queue
+## Included demo cases
 
-## Run the demo
+- Spanish qualified lead with a catalogue match: returns `PM-101`, keeps `preferred_features` separate from `must_have_features`, and remains review-gated.
+- German incomplete lead: triggers deterministic escalation because `budget_eur` is missing.
 
-1. In n8n, choose **Import from file**.
-2. Select `proplead_round2_workflow.json`.
-3. Open **Simulated channel input** to change the channel or message.
-4. Select **Execute workflow**.
-5. Inspect **Agent review queue**.
+## Guardrails
 
-The default Spanish case should return `PM-101`, a fully Spanish draft and `human_review_required: true`.
-
-For a missing-data demonstration, replace the message with:
-
-> Ich suche eine Wohnung mit zwei Schlafzimmern in Palma.
-
-The result should be `needs_information`, no matches and a German clarification draft.
-
-## Safety boundary
-
-This POC uses no credentials, sends no message and writes to no CRM. It demonstrates the workflow logic only. The tested browser MVP in `mvp/` contains the more complete deterministic baseline and evaluation coverage.
+- No external sending.
+- No credentials required.
+- Synthetic data only.
+- UTF-8 Spanish and German characters are preserved.
+- The workflow is separate from the deployed browser MVP and from the LangSmith OpenAI evaluation.
 
 ## Rebuild
 
-Run:
-
 ```bash
-node n8n/build_workflow.js
+node n8n/build_round2_poc.js
 ```

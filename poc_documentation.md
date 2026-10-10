@@ -1,93 +1,83 @@
-﻿# PropLead Round 2 POC documentation
+﻿# PropLead Round 2 n8n POC documentation
 
 ## Purpose
 
-The POC demonstrates how one multilingual property enquiry moves from a simulated channel to a structured, reviewable agent queue. It proves workflow feasibility without credentials, external sending or CRM access.
+This workflow demonstrates the controlled Round 2 automation path for PropLead AI without external sending, credentials or CRM access. It keeps the Round 1 structure but adds separate `must_have_features` and `preferred_features`, deterministic escalation and final review output.
 
-## Implemented workflow
+## Importable workflow
 
-1. Accept a synthetic enquiry with channel metadata.
-2. Normalise WhatsApp, email, web form, property portal, social or manual input to one contract.
-3. Detect English, German or Spanish.
-4. Extract only text-supported requirements.
-5. Identify missing, conflicting or uncertain data.
-6. Calculate a deterministic completeness/readiness score.
-7. Block matching when the minimum qualification gate is not met.
-8. Filter only available and recently verified catalogue properties.
-9. Draft a complete response or clarification question in one language.
-10. Stop in an agent queue with approve, edit, reject and escalate actions.
+- File: `n8n/proplead_round2_poc.json`
+- Workflow name: `PropLead AI — Round 2 POC`
+- Regenerator: `node n8n/build_round2_poc.js`
 
-## POC artifacts
+## Node sequence
 
-| Artifact | Purpose | Current status |
-|---|---|---|
-| `n8n/proplead_round2_workflow.json` | Importable seven-node automation workflow | Imported and executed successfully in the target n8n environment on 3 October 2026 |
-| `n8n/README.md` | Import and demo instructions | Complete |
-| `mvp/index.html` | Visual agent-review demonstration | Working offline |
-| `mvp/app.js` | Testable deterministic workflow engine | Working |
-| `tests/test_core.js` | Dataset and feedback regressions | Current browser regression suite passes |
+1. `Manual trigger`
+2. `Simulated test inputs`
+3. `Normalise intake`
+4. `Multilingual structured lead extraction`
+5. `Deterministic qualification and escalation`
+6. `Controlled catalogue matching`
+7. `Multilingual response-draft preparation`
+8. `Agent review queue`
 
-## n8n node sequence
+## What it proves
 
-1. **Manual trigger**
-2. **Simulated channel input**
-3. **Normalise intake**
-4. **Extract and qualify**
-5. **Qualification gate and matching**
-6. **Single-language draft**
-7. **Agent review queue**
+- Manual lead intake with synthetic test payloads.
+- Channel and input normalisation.
+- Multilingual extraction in English, Spanish and German.
+- Separate hard requirements and soft preferences.
+- Matching only against the controlled synthetic catalogue.
+- Deterministic escalation when data is incomplete.
+- Multilingual response drafting with UTF-8 characters preserved.
+- Mandatory human review before any response is sent.
 
-## Recommended live demo
+## Demo inputs
 
-Use the hosted MVP at https://proplead-ai-round2-mvp.vercel.app/ or the offline browser demo.
+### Case 1 — Spanish enquiry with a match
 
-### Case A — Qualified Spanish lead
+Input:
 
-Use the default n8n case or select **Qualified · ES** in the browser MVP.
+> Hola, busco un apartamento en Palma con balcón y, si es posible, vistas al mar. Mi presupuesto es de 600.000 euros.
 
-Expected evidence:
+Expected output:
 
-- Language: Spanish
-- Budget: €300,000 or €600,000, depending on the selected sample
-- Structured requirements
-- Available property match
-- Fully Spanish draft
-- `human_review_required: true`
+- `detected_language`: `es`
+- `must_have_features`: `balcony`
+- `preferred_features`: `sea view`
+- `compatible_property_ids`: `PM-101`
+- `qualification_status`: `matching_ready`
+- `must_escalate`: `false`
+- `human_review_required`: `true`
+- `status`: `awaiting_agent_approval`
 
-### Case B — Missing budget in German
+### Case 2 — German enquiry with deterministic escalation
 
-Use:
+Input:
 
 > Ich suche eine Wohnung mit zwei Schlafzimmern in Palma.
 
-Expected evidence:
+Expected output:
 
-- Language: German
-- Status: `needs_information`
-- No matching performed
-- German clarification question
-- No automatic sending
+- `detected_language`: `de`
+- `qualification_status`: `needs_information`
+- `compatible_property_ids`: empty
+- `must_escalate`: `true`
+- `escalation_reasons`: includes `missing_budget_eur`
+- `human_review_required`: `true`
+- `status`: `awaiting_agent_approval`
 
-### Case C — Mixed-language edge case
+## Import and execution
 
-Use the **Mixed language** browser sample.
+1. Open n8n.
+2. Choose **Import from file**.
+3. Select `n8n/proplead_round2_poc.json`.
+4. Open the `Simulated test inputs` node if you want to review or swap the demo payloads.
+5. Execute the workflow from `Manual trigger`.
+6. Inspect `Agent review queue` for the final review payload.
 
-Expected evidence:
+## Safety boundary
 
-- The explicit requirements are still extracted.
-- `mixed_language` appears as a review flag.
-- Priority is overridden to `review`.
-- The complete draft remains Spanish.
-
-## Validation completed
-
-- n8n workflow JSON parses correctly.
-- All six n8n code nodes compile.
-- The default n8n path was executed locally in sequence and returned `PM-101`, a Spanish draft and the approval gate.
-- The workflow was imported into the target n8n environment and executed successfully on 3 October 2026.
-- The final `Agent review queue` output returned `PM-101`, `human_review_required: true`, `status: awaiting_agent_approval` and the actions `approve`, `edit`, `reject` and `escalate`.
-- The browser test suite passes in the current repository state.
-
-## Honest limitation
-
-The n8n environment compatibility has now been confirmed. No claim is made that live WhatsApp, email, CRM or LangSmith integrations are implemented; the successful execution used a synthetic simulated channel payload and did not send or persist customer data.
+- The workflow uses documented synthetic leads and a controlled synthetic catalogue.
+- It does not send email, WhatsApp or CRM messages.
+- It is an importable POC only and is separate from the public browser MVP and the LangSmith evaluation targets.
