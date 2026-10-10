@@ -61,10 +61,12 @@ Use this as the live demo input:
 
 ## n8n execution to show
 
-Show the imported seven-node workflow evidence:
+Show the imported eight-node workflow evidence:
 
-- `n8n/proplead_round2_workflow.json`
-- `n8n/execution_evidence_2026-10-03.md`
+- `n8n/proplead_round2_poc.json`
+- `presentation/assets/n8n_workflow_success.png`
+- `presentation/assets/n8n_spanish_result.png`
+- `presentation/assets/n8n_german_escalation.png`
 
 Point out that the workflow ran successfully in the target n8n environment and that it is separate from the browser MVP.
 
@@ -92,8 +94,8 @@ Open `evaluation/langsmith.md` and show:
 - Explain that the browser demo is deterministic and offline.
 
 ### If n8n evidence is unavailable
-- Show `poc_documentation.md` and the workflow JSON import section.
-- Explain the seven-node flow verbally.
+- Show `poc_documentation.md` and the workflow JSON import section, then note the eight-node layout.
+- Explain the eight-node flow verbally.
 
 ### If LangSmith cannot be opened live
 - Show `evaluation/langsmith.md` as the authoritative offline record.
@@ -105,7 +107,8 @@ Open `evaluation/langsmith.md` and show:
 - Presentation content file open.
 - Demo enquiry copied to clipboard.
 - `evaluation/langsmith.md` visible on the final v2 section.
-- `n8n/execution_evidence_2026-10-03.md` available.
+- The final n8n evidence screenshots are available.
+- `presentation/assets/n8n_workflow_success.png` and the Spanish/German screenshots are ready.
 - `roi_risk_assessment.md`, `eu_ai_act_compliance.md` and `gdpr_documentation.md` open for backup references.
 - Internet connection verified for the hosted MVP.
 - Local copy of `mvp/index.html` ready as fallback.

@@ -14,6 +14,7 @@ from pptx import Presentation
 from pptx.util import Inches
 
 ROOT = Path(__file__).resolve().parent
+ASSET_DIR = ROOT / "assets"
 CONTENT_MD = ROOT / "final_presentation_content.md"
 RUNBOOK_MD = ROOT / "demo_runbook.md"
 LANGSMITH_MD = ROOT.parent / "evaluation" / "langsmith.md"
@@ -191,6 +192,17 @@ def placeholder(draw, box, title, subtitle=None):
             cur_y += 34
 
 
+def image_panel(canvas: Image.Image, draw: ImageDraw.ImageDraw, image_path: Path, box, caption: str | None = None, bg="#102033", outline=TEAL, padding: int = 16):
+    x1, y1, x2, y2 = box
+    draw_round_rect(draw, box, fill=hexrgb(bg), outline=hexrgb(outline), width=3, radius=26)
+    with Image.open(image_path) as source:
+        image = source.convert("RGB")
+        inner = ImageOps.contain(image, (x2 - x1 - padding * 2, y2 - y1 - padding * 2), Image.Resampling.LANCZOS)
+    canvas.paste(inner, (x1 + (x2 - x1 - inner.width) // 2, y1 + (y2 - y1 - inner.height) // 2))
+    if caption:
+        badge(draw, x1 + 20, y1 + 18, caption, fill=SLATE, outline=outline, font_size=16, pad_x=14, pad_y=8)
+
+
 def arrow(draw, x1, y1, x2, y2, color=TEAL, width=6):
     draw.line((x1, y1, x2, y2), fill=hexrgb(color), width=width)
     angle = math.atan2(y2 - y1, x2 - x1)
@@ -364,7 +376,7 @@ def build_slide_images(build_dir: Path) -> list[SlideAsset]:
             badge(draw, 790, 905, "KEEP", fill=SLATE, outline=TEAL, font_size=28)
         elif sec["num"] == 4:
             process_box(draw, (80, 300, 610, 820), "Public browser MVP", "Deterministic, review-gated browser interface. Uses synthetic property data and does not call OpenAI.", accent=TEAL)
-            process_box(draw, (655, 300, 1285, 820), "n8n operational POC", "Imported seven-node workflow in the target n8n environment. Demonstrates the operational path with simulated intake.", accent=GREEN)
+            process_box(draw, (655, 300, 1285, 820), "n8n operational POC", "Imported eight-node workflow in the target n8n environment. Demonstrates the operational path with simulated intake.", accent=GREEN)
             process_box(draw, (1330, 300, 1840, 820), "LangSmith hybrid extractor", "OpenAI hybrid extraction with deterministic policy. Evaluated separately from the public MVP.", accent=AMBER)
             badge(draw, 150, 860, "Separate layers: browser MVP • n8n POC • LangSmith evaluation", fill=SLATE, outline=TEAL, font_size=22)
         elif sec["num"] == 5:
@@ -389,55 +401,38 @@ def build_slide_images(build_dir: Path) -> list[SlideAsset]:
             # Maybe highlight simulated channels
             badge(draw, 140, 930, "Supported intake sources are simulated/standardised channels, not production integrations.", fill=SLATE, outline=TEAL, font_size=18)
         elif sec["num"] == 6:
-            placeholder(draw, (85, 230, 1140, 900), "PLACEHOLDER — deployed MVP screenshot", "Insert a screenshot of the live browser MVP at https://proplead-ai-round2-mvp.vercel.app/")
+            image_panel(img, draw, ASSET_DIR / "mvp_live_demo.png", (85, 230, 1140, 900), "Live multilingual MVP", bg="#13253B", outline=TEAL)
             card(draw, (1200, 240, 1835, 420), "What to point out", [
-                "• Deterministic browser MVP.",
-                "• Synthetic property data only.",
-                "• No customer message is sent automatically.",
+                "- Deterministic browser MVP.",
+                "- Synthetic property data only.",
+                "- No customer message is sent automatically.",
             ], fill=CARD, outline=TEAL, title_fill=TEXT, body_fill=TEXT_SOFT, title_size=28, body_size=22, body_top_offset=72)
             metric_card(draw, (1200, 465, 1835, 575), "Human-review gate", "Required", accent=GREEN)
             metric_card(draw, (1200, 600, 1835, 710), "Match type", "Catalogue-bound", accent=TEAL)
             metric_card(draw, (1200, 735, 1835, 845), "Data", "Documented synthetic", accent=AMBER)
             card(draw, (1200, 870, 1835, 960), "Demo input", ["Use the Spanish Port de Sóller enquiry from the runbook."], fill=CARD, outline=GREEN, title_fill=TEXT, body_fill=TEXT_SOFT, title_size=22, body_size=18, body_top_offset=48)
         elif sec["num"] == 7:
-            placeholder(draw, (85, 230, 1000, 900), "PLACEHOLDER — n8n successful execution screenshot", "Insert the run evidence from the imported seven-node workflow")
-            # node row diagram on the right
-            node_x = 1070
-            node_y = 330
-            node_w = 170
-            node_h = 86
-            labels = ["Manual\ntrigger", "Simulated\ninput", "Normalise", "Extract +\nqualify", "Match", "Draft", "Review"]
-            for idx, label in enumerate(labels):
-                box = (node_x + idx * 106, node_y + (idx % 2) * 90, node_x + idx * 106 + node_w, node_y + (idx % 2) * 90 + node_h)
-                process_box(draw, box, label, "", accent=[TEAL, GREEN, TEAL_2, AMBER, TEAL, GREEN, TEAL_2][idx], fill=CARD)
-                if idx < len(labels) - 1:
-                    arrow(draw, box[2] + 5, box[1] + 43, node_x + (idx + 1) * 106 - 8, node_y + ((idx + 1) % 2) * 90 + 43, color=TEAL, width=5)
-            card(draw, (1070, 620, 1835, 845), "What the screenshot should prove", [
-                "• Imported successfully in the target n8n environment.",
-                "• Seven-node workflow executed successfully.",
-                "• Separate from the browser MVP.",
-                "• Still based on simulated/synthetic input.",
-            ], fill=CARD, outline=GREEN, title_fill=TEXT, body_fill=TEXT_SOFT, title_size=26, body_size=21, body_top_offset=68)
+            image_panel(img, draw, ASSET_DIR / "n8n_workflow_success.png", (85, 230, 1035, 900), "n8n workflow success", bg="#13253B", outline=GREEN)
+            image_panel(img, draw, ASSET_DIR / "n8n_spanish_result.png", (1070, 230, 1835, 535), "Spanish lead: PM-101 match", bg="#13253B", outline=TEAL_2)
+            image_panel(img, draw, ASSET_DIR / "n8n_german_escalation.png", (1070, 555, 1835, 860), "German lead: deterministic escalation", bg="#13253B", outline=AMBER)
+            badge(draw, 85, 915, "8 nodes incl. Manual Trigger - both simulated inputs survived every downstream node", fill=SLATE, outline=TEAL, font_size=18)
         elif sec["num"] == 8:
-            card(draw, (85, 210, 1835, 890), "LangSmith comparison", None, fill=CARD, outline=TEAL, title_fill=TEXT, title_size=30)
-            draw.text((120, 280), "Baseline v1 — structured_extractor_v1-fd0b3bae", font=f(24, bold=True), fill=hexrgb(TEXT))
-            draw.text((1060, 280), "Final hybrid v2 — structured_extractor_v2-d2454c34", font=f(24, bold=True), fill=hexrgb(TEXT))
-            # Baseline column
-            metric_card(draw, (120, 330, 820, 416), "Language accuracy", v1_metrics.get("Language accuracy", "100%"), accent=TEAL, value_size=30)
-            metric_card(draw, (120, 430, 820, 516), "Human-review gate", v1_metrics.get("Human-review gate", "100%"), accent=GREEN, value_size=30)
-            metric_card(draw, (120, 530, 820, 616), "No-critical-fabrication", v1_metrics.get("No-critical-fabrication", "94.4444%"), accent=AMBER, value_size=28)
-            metric_card(draw, (120, 630, 820, 716), "Explicit-field accuracy", v1_metrics.get("Explicit-field accuracy", "92.4%"), accent=AMBER, value_size=28)
-            badge(draw, 120, 760, f"Escalation accuracy: {v1_metrics.get('Escalation accuracy', '61.1%')}", fill=SLATE, outline=RED, font_size=20)
-            # v2 column
-            metric_card(draw, (1060, 330, 1760, 416), "Matching correctness", v2_metrics.get("Matching correctness", "100%"), accent=GREEN, value_size=30)
-            metric_card(draw, (1060, 430, 1760, 516), "Escalation correctness", v2_metrics.get("Escalation correctness", "100%"), accent=GREEN, value_size=30)
-            metric_card(draw, (1060, 530, 1760, 616), "Human-review gate", v2_metrics.get("Human-review gate", "100%"), accent=GREEN, value_size=30)
-            metric_card(draw, (1060, 630, 1760, 716), "Language correctness", v2_metrics.get("Language correctness", "100%"), accent=GREEN, value_size=30)
-            badge(draw, 1060, 760, f"Explicit / no-critical: {v2_metrics.get('Explicit-field accuracy', '93.0556%')} / {v2_metrics.get('No-critical-fabrication', '94.4444%')}", fill=SLATE, outline=TEAL, font_size=18)
-            badge(draw, 85, 915, "Average latency: 1.5378 seconds", fill=SLATE, outline=TEAL_2, font_size=22)
-            badge(draw, 515, 915, "Total tokens: 7,753", fill=SLATE, outline=TEAL_2, font_size=22)
-            badge(draw, 810, 915, "Total cost: USD 0.01120725", fill=SLATE, outline=TEAL_2, font_size=22)
-            badge(draw, 1320, 915, "v1 revealed the escalation weakness; v2 fixed the matching path", fill=SLATE, outline=AMBER, font_size=18)
+            image_panel(img, draw, ASSET_DIR / "langsmith_v2_results.png", (85, 220, 1835, 535), "Final LangSmith v2 evaluation", bg="#13253B", outline=TEAL)
+            draw.text((100, 580), "Baseline v1 — structured_extractor_v1-fd0b3bae", font=f(24, bold=True), fill=hexrgb(WHITE))
+            draw.text((1025, 580), "Final hybrid v2 — structured_extractor_v2-d2454c34", font=f(24, bold=True), fill=hexrgb(WHITE))
+            metric_card(draw, (100, 625, 860, 697), "Matching correctness", v1_metrics.get("Matching correctness", "72.2%"), accent=RED, value_size=24, label_size=16)
+            metric_card(draw, (100, 705, 860, 777), "Escalation correctness", v1_metrics.get("Escalation correctness", "61.1%"), accent=RED, value_size=24, label_size=16)
+            metric_card(draw, (100, 785, 860, 857), "Human-review gate", v1_metrics.get("Human-review gate", "100%"), accent=GREEN, value_size=24, label_size=16)
+            metric_card(draw, (100, 865, 860, 937), "Language correctness", v1_metrics.get("Language correctness", "100%"), accent=TEAL, value_size=24, label_size=16)
+            metric_card(draw, (1025, 625, 1785, 697), "Matching correctness", v2_metrics.get("Matching correctness", "100%"), accent=GREEN, value_size=24, label_size=16)
+            metric_card(draw, (1025, 705, 1785, 777), "Escalation correctness", v2_metrics.get("Escalation correctness", "100%"), accent=GREEN, value_size=24, label_size=16)
+            metric_card(draw, (1025, 785, 1785, 857), "Human-review gate", v2_metrics.get("Human-review gate", "100%"), accent=GREEN, value_size=24, label_size=16)
+            metric_card(draw, (1025, 865, 1785, 937), "Language correctness", v2_metrics.get("Language correctness", "100%"), accent=GREEN, value_size=24, label_size=16)
+            badge(draw, 85, 945, f"Explicit-field accuracy: {v2_metrics.get('Explicit-field accuracy', '93.0556%')}", fill=SLATE, outline=TEAL, font_size=18)
+            badge(draw, 445, 945, f"No-critical-fabrication: {v2_metrics.get('No-critical-fabrication', '94.4444%')}", fill=SLATE, outline=TEAL, font_size=18)
+            badge(draw, 855, 945, f"Average latency: {v2_metrics.get('Average latency', '1.5378 seconds')}", fill=SLATE, outline=TEAL_2, font_size=18)
+            badge(draw, 1285, 945, f"Total tokens: {v2_metrics.get('Total tokens', '7,753')}", fill=SLATE, outline=TEAL_2, font_size=18)
+            badge(draw, 1545, 945, f"Total cost: {v2_metrics.get('Total cost', 'USD 0.01120725')}", fill=SLATE, outline=TEAL_2, font_size=18)
         elif sec["num"] == 9:
             card(draw, (80, 220, 640, 900), "ROI assumptions", [
                 f"• Agency size: 1–9 employees.",

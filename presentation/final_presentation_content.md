@@ -11,7 +11,7 @@
 - Mandatory human approval before any customer reply
 
 **Recommended visual or screenshot:**
-- Full-screen screenshot of the browser MVP review panel with a sample lead
+- Full-screen screenshot of the live browser MVP review panel with a sample lead
 
 **Speaker notes:**
 PropLead AI solves a practical agency problem. A small Mallorca team receives enquiries in English, German and Spanish, often with incomplete details. The workflow helps the agent understand the request, check if the lead is ready, and prepare a safer reply. The important point is that the system supports the agent. It does not replace the agent.
@@ -54,7 +54,7 @@ Round 1 feedback did not kill the idea. It sharpened it. The project kept the sa
 - Prepares a draft for agent approval; no automatic sending
 
 **Recommended visual or screenshot:**
-- `mvp/index.html` with the source selector and agent review panel
+- `presentation/assets/mvp_live_demo.png` placed on the MVP slide, plus the review panel and approval controls
 
 **Speaker notes:**
 The browser MVP is deterministic and local. It uses synthetic property data and a fixed catalogue. Its job is to structure the lead, identify missing information, and suggest catalogue-bound matches. It does not send customer messages automatically. That final approval always stays with the agent.
@@ -113,16 +113,17 @@ This is the public MVP demo. It shows the practical workflow without any live AP
 **Slide title:** n8n operational POC
 
 **On-slide content:**
-- Imported seven-node workflow
+- Imported eight-node workflow, including the Manual Trigger
 - Executed successfully in the target n8n environment
 - Demonstrates the operational path
+- 2/2 simulated inputs preserved through every downstream node
 - Still uses synthetic/simulated input, not production integrations
 
 **Recommended visual or screenshot:**
-- `n8n/execution_evidence_2026-10-03.md` and the workflow JSON
+- `presentation/assets/n8n_workflow_success.png` alongside the Spanish and German evidence screenshots and the workflow JSON
 
 **Speaker notes:**
-The n8n proof of concept shows the operational flow. It is separate from the browser MVP and separate from the LangSmith extractor evaluation. It demonstrates that the round-trip workflow can run in n8n, but it does not mean live integrations are finished.
+The n8n proof of concept shows the operational flow. It is separate from the browser MVP and separate from the LangSmith extractor evaluation. It demonstrates that the eight-node workflow can run in n8n, but it does not mean live integrations are finished.
 
 **What to show on screen:**
 - `n8n/README.md` or the execution evidence file
@@ -136,14 +137,16 @@ The n8n proof of concept shows the operational flow. It is separate from the bro
 **On-slide content:**
 - Baseline v1: `structured_extractor_v1-fd0b3bae`
 - Final hybrid v2: `structured_extractor_v2-d2454c34`
+- 18/18 successful runs
 - v1 exposed escalation weakness
 - v2 achieved 100% matching, 100% escalation, 100% human gate and 100% language correctness
+- v2 also records 93.0556% explicit-field accuracy and 94.4444% no-critical-fabrication
 
 **Recommended visual or screenshot:**
 - `evaluation/langsmith.md`
 
 **Speaker notes:**
-The LangSmith evidence matters because it separates the extraction experiment from the browser MVP. The v1 run was useful as a baseline, but it showed weak escalation. The final hybrid v2 run fixed the matching path and delivered the best documented result in the repository: perfect matching, perfect escalation, perfect human-review gating and perfect language correctness. The remaining gap is explicit-field accuracy, which is good but not perfect.
+The LangSmith evidence matters because it separates the extraction experiment from the browser MVP. The v1 run was useful as a baseline, but it showed weak escalation. The final hybrid v2 run fixed the matching path and delivered the best documented result in the repository: perfect matching, perfect escalation, perfect human-review gating and perfect language correctness. The run also records 93.0556% explicit-field accuracy and 94.4444% no-critical-fabrication. The remaining gap is explicit-field accuracy, which is good but not perfect.
 
 **What to show on screen:**
 - `evaluation/langsmith.md` with the final structured v2 section visible
