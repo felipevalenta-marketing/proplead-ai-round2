@@ -1,7 +1,7 @@
-# PropLead ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â Ironhack Capstone Round 2
+﻿# PropLead ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â Ironhack Capstone Round 2
 
 **Consultant:** Carlos Felipe Valencia  
-**Scenario:** Chleo Realty Mallorca, a micro real estate agency with 1ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œ9 employees
+**Scenario:** Chleo Realty Mallorca, a micro real estate agency with 1ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã¢â‚¬Å“9 employees
 **Decision after Round 1:** KEEP  
 **Primary use case:** Multilingual lead qualification and property matching
 
@@ -38,6 +38,7 @@ One free-text enquiry enters the system. The MVP:
 - Current improvement priorities are unseen-query property matching and deterministic escalation.
 - Synthetic data is documented, and no response is sent without human approval.
 - Round 1 peer feedback (4.00 / 5.00) translated into scope, controls and regression criteria.
+- Round 1 evidence index: [round1/README.md](round1/README.md).
 
 ## Important implementation boundary
 
@@ -54,6 +55,7 @@ architecture/               MVP architecture and lead schema
 data/                       Fictional Round 2 property catalogue with availability metadata
 evaluation/                 LangSmith plan and synthetic dataset
 feedback/                   Round 1 decision and peer-feedback response
+round1/                    Round 1 evidence index
 mvp/                        Working offline agent-review MVP
 n8n/                        Importable Round 2 POC and instructions
 poc/                        POC upgrade plan
