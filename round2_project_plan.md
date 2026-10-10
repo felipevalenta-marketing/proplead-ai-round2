@@ -54,6 +54,7 @@
 - [x] Create the LangSmith dataset
 - [x] Run the deterministic offline baseline experiment
 - [x] Run the hybrid structured_extractor_v2 experiment
+- [x] Confirm the final hosted hybrid_policy_v2 candidate while keeping mandatory human review
 - [x] Inspect failed traces and add regressions
 - [x] Report classification, matching and language metrics separately by language
 - [x] Run the feedback-driven regression cases locally

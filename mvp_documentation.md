@@ -6,7 +6,7 @@ PropLead is an offline browser MVP for a small Mallorca real-estate agency. It c
 
 ## How to run
 
-Open `mvp/index.html` in Chrome, Edge or Firefox. No installation, API key or internet connection is required.
+Open `mvp/index.html` in Chrome, Edge or Firefox. No installation, API key or internet connection is required. The deployed public MVP is available at https://proplead-ai-round2-mvp.vercel.app/.
 
 For automated validation:
 
@@ -27,6 +27,7 @@ node evaluation/run_baseline.js
 - Availability and verification-date catalogue controls.
 - Maximum of three compatible properties.
 - Same-language response or clarification drafting.
+- The public MVP uses synthetic property data only, and every response requires human approval before sending.
 - Approve, edit, reject and escalate review outcomes.
 - No automatic outbound sending.
 - Deterministic multilingual matching normalises accents, apostrophes, location spellings, budget formats, bedroom phrasing and must-have feature concepts before filtering and ranking.

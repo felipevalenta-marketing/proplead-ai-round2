@@ -29,6 +29,7 @@ One free-text enquiry enters the system. The MVP:
 - Round 2 use-case definition completed.
 - MVP architecture and data contract drafted.
 - The browser MVP is implemented.
+- The deployed public MVP is available at https://proplead-ai-round2-mvp.vercel.app/.
 - The seven-node n8n workflow was imported and executed successfully.
 - The 18-case multilingual dataset was created and validated.
 - Both LangSmith experiments were executed.

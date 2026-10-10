@@ -33,12 +33,16 @@
   ];
 
   const FEATURE_RULES = [
+    { canonical: 'balcony', aliases: ['balcony', 'balcon', 'balcón', 'balkon'] },
     { canonical: 'pool', aliases: ['pool', 'piscina'] },
     { canonical: 'parking', aliases: ['parking', 'aparcamiento', 'stellplatz'] },
-    { canonical: 'sea view', aliases: ['sea view', 'sea front', 'seafront', 'frontline', 'beachfront', 'frente al mar', 'meerblick', 'on the beach', 'directly on the sea', 'direkt am meer', 'primera linea'] },
+    { canonical: 'sea view', aliases: ['sea view', 'sea front', 'seafront', 'frontline', 'beachfront', 'frente al mar', 'vistas al mar', 'meerblick', 'on the beach', 'directly on the sea', 'direkt am meer', 'primera linea'] },
     { canonical: 'tourist licence', aliases: ['tourist licence', 'tourist license', 'tourist rental licence', 'tourist rental license', 'licencia turistica', 'licencia turística', 'ferienvermietung'] },
     { canonical: 'renovation', aliases: ['renovation', 'renovate', 'renovating', 'reformar', 'reforma', 'reform', 'renovierungsbeduerftig', 'renovierungsbedürftig', 'for reform', 'to renovate'] }
   ];
+
+  const HARD_FEATURE_CUES = ['must have', 'must', 'need', 'needs', 'required', 'have to', 'has to', 'necesito', 'necesita', 'necesitan', 'debe tener', 'tiene que', 'brauche', 'brauchen', 'muss', 'mussen', 'musst'];
+  const SOFT_FEATURE_CUES = ['preferably', 'preferred', 'if possible', 'if you can', 'would prefer', 'would like', 'ideally', 'nice to have', 'si es posible', 'si puede ser', 'preferiblemente', 'preferiria', 'wenn moglich', 'am liebsten', 'gern', 'gerne'];
 
   const NUMBER_WORDS = {
     one: 1,
@@ -85,7 +89,8 @@
 
   function normaliseText(value) {
     return String(value || '')
-      .replace(/[’´`]/g, "'")
+      .replace(/[\u2019`\u00b4]/g, "'")
+      .replace(/â€™|Â´/g, "'")
       .replace(/\s+/g, ' ')
       .trim();
   }
@@ -93,7 +98,8 @@
   function normaliseForMatching(value) {
     return stripDiacritics(normaliseText(value))
       .toLowerCase()
-      .replace(/[’'`´]/g, ' ')
+      .replace(/[\u2019'`\u00b4]/g, ' ')
+      .replace(/Ã¢â‚¬â„¢|Ã‚Â´/g, ' ')
       .replace(/[^a-z0-9]+/gi, ' ')
       .replace(/\s+/g, ' ')
       .trim();
@@ -271,7 +277,7 @@
 
   function extractFinancing(text) {
     const lower = normaliseForMatching(text);
-    if (/finanzierung noch unklar|financing.*unclear|financiaci[oó]n.*(sin|no|duda|aclar)/i.test(lower)) return 'unknown';
+    if (/finanzierung noch unklar|financing.*unclear|financiacion.*(sin|no|duda|aclar)/i.test(lower)) return 'unknown';
     if (/mortgage|hipoteca|finanzier/i.test(lower)) return 'mortgage';
     if (/cash buyer|al contado|barzahler/i.test(lower)) return 'cash';
     return null;
@@ -296,6 +302,44 @@
 
   function canonicaliseCatalogueFeatures(features) {
     return [...new Set((features || []).map(canonicaliseFeature).filter(Boolean))];
+  }
+
+  function lastCueIndex(context, cues) {
+    let index = -1;
+    for (const cue of cues) {
+      const cueIndex = context.lastIndexOf(` ${normaliseForMatching(cue)} `);
+      if (cueIndex > index) index = cueIndex;
+    }
+    return index;
+  }
+
+  function extractFeatureMentions(text) {
+    const clauses = String(text || '')
+      .split(/[,.!?;:]+|\b(?:and|y|und)\b/)
+      .map(part => normaliseForMatching(part).trim())
+      .filter(Boolean);
+    const mustHaveFeatures = [];
+    const preferredFeatures = [];
+
+    for (const rule of FEATURE_RULES) {
+      let hardFound = false;
+      let preferredFound = false;
+      for (const clause of clauses) {
+        const clauseHasFeature = rule.aliases.some(alias => tokenisedMatch(clause, alias));
+        if (!clauseHasFeature) continue;
+        const hardClause = HARD_FEATURE_CUES.some(cue => clause.includes(normaliseForMatching(cue)));
+        const softClause = SOFT_FEATURE_CUES.some(cue => clause.includes(normaliseForMatching(cue)));
+        if (softClause && !hardClause) preferredFound = true;
+        else hardFound = true;
+      }
+      if (hardFound) mustHaveFeatures.push(rule.canonical);
+      else if (preferredFound) preferredFeatures.push(rule.canonical);
+    }
+
+    return {
+      mustHaveFeatures: [...new Set(mustHaveFeatures)],
+      preferredFeatures: [...new Set(preferredFeatures)]
+    };
   }
 
   function policyFlags(text) {
@@ -426,7 +470,7 @@
 
   const LABELS = {
     en: { budget_eur: 'your maximum budget', specific_location: 'your preferred area', property_type_or_bedrooms: 'the property type or minimum number of bedrooms' },
-    es: { budget_eur: 'su presupuesto maximo', specific_location: 'la zona especifica que prefiere', property_type_or_bedrooms: 'el tipo de propiedad o el numero minimo de dormitorios' },
+    es: { budget_eur: 'su presupuesto máximo', specific_location: 'la zona específica que prefiere', property_type_or_bedrooms: 'el tipo de propiedad o el número mínimo de dormitorios' },
     de: { budget_eur: 'Ihr maximales Budget', specific_location: 'Ihre bevorzugte genaue Lage', property_type_or_bedrooms: 'den Immobilientyp oder die Mindestanzahl der Schlafzimmer' }
   };
 
@@ -440,19 +484,20 @@
     const lang = lead.language;
     if (lead.qualification_status === 'needs_information') {
       const items = lead.missing_fields.map(field => LABELS[lang][field]);
-      if (lang === 'es') return `Gracias por su consulta. Para poder encontrar opciones adecuadas, podria confirmarnos ${joinNatural(items, lang)}? Revisaremos su respuesta antes de recomendar cualquier propiedad.`;
-      if (lang === 'de') return `Vielen Dank fur Ihre Anfrage. Damit wir passende Optionen finden konnen, konnten Sie bitte ${joinNatural(items, lang)} bestatigen? Wir prufen Ihre Antwort, bevor wir eine Immobilie empfehlen.`;
+      if (lang === 'es') return `Gracias por su consulta. Para poder encontrar opciones adecuadas, podría confirmarnos ${joinNatural(items, lang)}? Revisaremos su respuesta antes de recomendar cualquier propiedad.`;
+      if (lang === 'de') return `Vielen Dank für Ihre Anfrage. Damit wir passende Optionen finden können, könnten Sie bitte ${joinNatural(items, lang)} bestätigen? Wir prüfen Ihre Antwort, bevor wir eine Immobilie empfehlen.`;
       return `Thank you for your enquiry. To help us find suitable options, could you please confirm ${joinNatural(items, lang)}? We will review your answer before recommending any property.`;
     }
     if (lead.matches.length) {
-      if (lang === 'es') return `Gracias por su consulta. Hemos identificado ${lead.matches.length} opcion${lead.matches.length > 1 ? 'es' : ''} que coincide${lead.matches.length > 1 ? 'n' : ''} con los requisitos indicados. Un agente comprobara la disponibilidad y revisara los detalles antes de responderle.`;
-      if (lang === 'de') return `Vielen Dank fur Ihre Anfrage. Wir haben ${lead.matches.length} mogliche Option${lead.matches.length > 1 ? 'en' : ''} gefunden, die Ihren Angaben entspricht. Ein Makler pruft die Verfugbarkeit und alle Details, bevor wir Ihnen antworten.`;
+      if (lang === 'es') return `Gracias por su consulta. Hemos identificado ${lead.matches.length} opción${lead.matches.length > 1 ? 'es' : ''} que coincide${lead.matches.length > 1 ? 'n' : ''} con los requisitos indicados. Un agente comprobará la disponibilidad y revisará los detalles antes de responderle.`;
+      if (lang === 'de') return `Vielen Dank für Ihre Anfrage. Wir haben ${lead.matches.length} mögliche Option${lead.matches.length > 1 ? 'en' : ''} gefunden, die Ihren Angaben entspricht. Ein Makler prüft die Verfügbarkeit und alle Details, bevor wir Ihnen antworten.`;
       return `Thank you for your enquiry. We identified ${lead.matches.length} possible option${lead.matches.length > 1 ? 's' : ''} matching your stated requirements. An agent will confirm availability and review the details before replying.`;
     }
-    if (lang === 'es') return 'Gracias por su consulta. No hemos encontrado una coincidencia fiable en el catalogo actual. Un agente revisara su solicitud antes de responderle.';
-    if (lang === 'de') return 'Vielen Dank fur Ihre Anfrage. Im aktuellen Katalog wurde keine verlassliche Ubereinstimmung gefunden. Ein Makler pruft Ihre Anfrage, bevor wir Ihnen antworten.';
+    if (lang === 'es') return 'Gracias por su consulta. No hemos encontrado una coincidencia fiable en el catálogo actual. Un agente revisará su solicitud antes de responderle.';
+    if (lang === 'de') return 'Vielen Dank für Ihre Anfrage. Im aktuellen Katalog wurde keine verlässliche Übereinstimmung gefunden. Ein Makler prüft Ihre Anfrage, bevor wir Ihnen antworten.';
     return 'Thank you for your enquiry. We could not find a reliable match in the current catalogue. An agent will review your request before replying.';
   }
+
 
   function extractLead(normalised) {
     const text = normalised.original_text;
@@ -467,8 +512,9 @@
     if (bedrooms.ambiguous) riskFlags.push('ambiguous_bedrooms');
     if (languageResult.mixed) riskFlags.push('mixed_language');
     if (locationResult.locations.length > 1) riskFlags.push('multiple_locations');
-    if (/\b(maybe|perhaps|possibly|vielleicht|quizas|quizás|tal vez)\b/i.test(normaliseForMatching(text))) riskFlags.push('uncertain_requirements');
+    if (/\b(maybe|perhaps|possibly|vielleicht|quizas|tal vez)\b/i.test(normaliseForMatching(text))) riskFlags.push('uncertain_requirements');
     const confidence = riskFlags.some(flag => flag.startsWith('ambiguous') || flag === 'conflicting_budget') ? 'low' : languageResult.mixed ? 'medium' : 'high';
+    const featureMentions = extractFeatureMentions(text);
     const lead = {
       ...normalised,
       language: languageResult.language,
@@ -480,7 +526,8 @@
       timeline_months: extractTimeline(text),
       purpose: extractPurpose(text),
       financing_status: extractFinancing(text),
-      must_have_features: extractMustHaves(text),
+      must_have_features: featureMentions.mustHaveFeatures,
+      preferred_features: featureMentions.preferredFeatures,
       risk_flags: [...new Set(riskFlags)],
       confidence,
       evidence: { original_text: text }

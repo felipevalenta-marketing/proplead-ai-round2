@@ -95,3 +95,34 @@ test('Spanish missing-data case gets a same-language clarification question', ()
   assert.match(actual.draft_reply, /presupuesto/);
   assert.doesNotMatch(actual.draft_reply, /Thank you|could you/i);
 });
+
+
+test('soft preferences stay soft and do not block matching', () => {
+  const cases = [
+    { message: 'I must have a balcony, preferably sea view, in Palma, for a 2-bedroom apartment with a budget of €600,000.', language: 'en' },
+    { message: 'Necesito un piso con balcón, si es posible con vistas al mar, en Palma, para un apartamento de 2 dormitorios con un presupuesto de 600.000 euros.', language: 'es' },
+    { message: 'Ich brauche einen Balkon, wenn möglich Meerblick, in Palma, für eine Wohnung mit zwei Schlafzimmern und einem Budget von 600.000 Euro.', language: 'de' }
+  ];
+
+  for (const testCase of cases) {
+    const actual = PropLead.processLead({source_channel:'web_form',original_text:testCase.message}, catalogue, {reference_date:'2026-10-03'});
+    assert.equal(actual.language, testCase.language);
+    assert.deepEqual(actual.must_have_features, ['balcony']);
+    assert.deepEqual(actual.preferred_features, ['sea view']);
+    assert.ok(actual.matches.some(property => property.id === 'PM-101'));
+    assert.equal(actual.human_review_required, true);
+  }
+});
+
+test('draft replies preserve Spanish and German accents', () => {
+  const spanish = PropLead.processLead({source_channel:'web_form',original_text:'Hola, busco un piso con balcón en Palma.'}, catalogue, {reference_date:'2026-10-03'});
+  const german = PropLead.processLead({source_channel:'web_form',original_text:'Ich suche eine Wohnung mit Balkon in Palma.'}, catalogue, {reference_date:'2026-10-03'});
+
+  assert.equal(spanish.language, 'es');
+  assert.match(spanish.draft_reply, /podría|máximo|opciones|revisará|catálogo/);
+  assert.doesNotMatch(spanish.draft_reply, /Thank you|could you|please confirm/i);
+
+  assert.equal(german.language, 'de');
+  assert.match(german.draft_reply, /für|könnten|prüfen|Verfügbarkeit|verlässliche|Übereinstimmung/);
+  assert.doesNotMatch(german.draft_reply, /Thank you|could you|please confirm/i);
+});

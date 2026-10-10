@@ -2,7 +2,7 @@
 
 These cases turn the Round 1 peer feedback into measurable Round 2 tests. They supplement the 18-case multilingual seed dataset and the new unseen-matching regressions.
 
-Status: the final hosted hybrid structured-extraction evaluation passed, the regression cases remain in force, and mandatory human review is still required.
+Status: the final hosted hybrid structured-extraction evaluation passed, the regression cases remain in force, and mandatory human review is still required. The public MVP uses synthetic data and no response is sent automatically.
 
 | ID | Scenario | Source | Expected control |
 |---|---|---|---|
