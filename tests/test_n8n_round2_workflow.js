@@ -22,6 +22,7 @@ function runWorkflow(input) {
     'Normalise intake',
     'Multilingual structured lead extraction',
     'Deterministic qualification and escalation',
+    'Controlled catalogue matching',
     'Multilingual response-draft preparation',
     'Agent review queue'
   ];
@@ -44,6 +45,14 @@ test('n8n workflow JSON round-trips cleanly', () => {
   const roundTripped = JSON.parse(JSON.stringify(parsed));
   assert.deepEqual(roundTripped, parsed);
   assert.equal(parsed.name, 'PropLead AI — Round 2 POC v2');
+});
+
+test('parsed workflow preserves controlled matching regex escapes', () => {
+  const parsed = JSON.parse(fs.readFileSync(WORKFLOW_FILE, 'utf8'));
+  const node = parsed.nodes.find(entry => entry.name === 'Controlled catalogue matching');
+  assert.ok(node, 'Controlled catalogue matching node is present');
+  assert.ok(node.parameters.jsCode.includes('replace(/\\s+/g'), 'regex escapes are preserved in the parsed JSON');
+  assert.ok(node.parameters.jsCode.includes('Port de S\\u00f3ller'), 'catalogue matching code retains the canonical location');
 });
 
 test('Spanish regression keeps the original message and matches PM-101', () => {

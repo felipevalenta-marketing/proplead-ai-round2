@@ -307,6 +307,97 @@ return [{
   }
 }];`);
 
+
+setNodeCode('Controlled catalogue matching', String.raw`const lead = $json;
+const referenceDate = Date.parse('2026-10-03T00:00:00Z');
+const freshnessDays = 30;
+const structuredLead = lead.structured_lead;
+
+const catalogue = [
+  { id: 'PM-101', title: 'Palma Old Town Apartment', location: 'Palma', type: 'apartment', price_eur: 575000, bedrooms: 2, status: 'available', last_verified_at: '2026-09-29', key_features: ['renovated', 'balcony', 'central'] },
+  { id: 'PM-102', title: 'Santa Catalina Townhouse', location: 'Palma', type: 'townhouse', price_eur: 895000, bedrooms: 3, status: 'available', last_verified_at: '2026-09-29', key_features: ['terrace', 'character property', 'central'] },
+  { id: 'PM-103', title: 'Port de S\u00f3ller Sea View Apartment', location: 'S\u00f3ller', type: 'apartment', price_eur: 760000, bedrooms: 2, status: 'available', last_verified_at: '2026-09-29', key_features: ['sea view', 'terrace', 'lift'] },
+  { id: 'PM-104', title: 'Art\u00e0 Stone Finca', location: 'Art\u00e0', type: 'finca', price_eur: 1390000, bedrooms: 4, status: 'available', last_verified_at: '2026-09-29', key_features: ['tourist licence', 'pool', 'solar energy'] },
+  { id: 'PM-105', title: 'Sant Lloren\u00e7 Townhouse', location: 'Sant Lloren\u00e7 des Cardassar', type: 'townhouse', price_eur: 435000, bedrooms: 2, status: 'available', last_verified_at: '2026-09-29', key_features: ['pool', 'terrace', 'licence'] },
+  { id: 'PM-106', title: "Cala d'Or Frontline Apartment", location: "Cala d'Or", type: 'apartment', price_eur: 290000, bedrooms: 2, status: 'available', last_verified_at: '2026-09-29', key_features: ['sea front', 'renovation opportunity'] },
+  { id: 'PM-107', title: 'Palma Family Villa', location: 'Palma', type: 'villa', price_eur: 1250000, bedrooms: 4, status: 'available', last_verified_at: '2026-09-29', key_features: ['pool', 'parking', 'garden'] },
+  { id: 'PM-108', title: 'Inca Renovation House', location: 'Inca', type: 'townhouse', price_eur: 320000, bedrooms: 3, status: 'available', last_verified_at: '2026-09-29', key_features: ['renovation', 'patio', 'investment potential'] }
+];
+
+function fold(value) {
+  return String(value || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[\u2019'\`\u00B4]/g, ' ')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function typeCompatible(requested, actual) {
+  if (!requested) return true;
+  if (requested === actual) return true;
+  if (requested === 'house' && ['townhouse', 'villa'].includes(actual)) return true;
+  if (requested === 'townhouse' && actual === 'house') return true;
+  return false;
+}
+
+function locationCompatible(requestedLocations, propertyLocation) {
+  if (!requestedLocations.length) return true;
+  const propertyFolded = fold(propertyLocation);
+  return requestedLocations.some(location => fold(location) === propertyFolded);
+}
+
+function isFresh(property) {
+  const verifiedAt = Date.parse(property.last_verified_at + 'T00:00:00Z');
+  const ageDays = Math.floor((referenceDate - verifiedAt) / 86400000);
+  return ageDays >= 0 && ageDays <= freshnessDays;
+}
+
+function hasFeature(property, feature) {
+  return property.key_features.some(item => fold(item) === fold(feature));
+}
+
+function matches(property, leadData) {
+  if (property.status !== 'available') return false;
+  if (!isFresh(property)) return false;
+  if (leadData.budget_eur !== null && property.price_eur > leadData.budget_eur) return false;
+  if (!locationCompatible(leadData.locations, property.location)) return false;
+  if (!typeCompatible(leadData.property_type, property.type)) return false;
+  if (leadData.min_bedrooms !== null && property.bedrooms < leadData.min_bedrooms) return false;
+  if (!leadData.must_have_features.every(feature => hasFeature(property, feature))) return false;
+  return true;
+}
+
+function preferenceScore(property, preferredFeatures) {
+  return preferredFeatures.reduce((score, feature) => score + (hasFeature(property, feature) ? 1 : 0), 0);
+}
+
+const matchesFound = lead.qualification_status === 'matching_ready'
+  ? catalogue.filter(property => matches(property, structuredLead)).sort((left, right) => {
+      const preferenceDelta = preferenceScore(right, structuredLead.preferred_features) - preferenceScore(left, structuredLead.preferred_features);
+      if (preferenceDelta !== 0) return preferenceDelta;
+      return left.price_eur - right.price_eur;
+    })
+  : [];
+
+const compatiblePropertyIds = matchesFound.map(property => property.id);
+const escalationReasons = [...lead.escalation_reasons];
+if (lead.qualification_status === 'matching_ready' && compatiblePropertyIds.length === 0) {
+  escalationReasons.push('no_catalogue_match');
+}
+
+return [{
+  json: {
+    ...lead,
+    matched_properties: matchesFound,
+    compatible_property_ids: compatiblePropertyIds,
+    must_escalate: escalationReasons.length > 0,
+    escalation_reasons: escalationReasons
+  }
+}];`);
+
 setNodeCode('Multilingual response-draft preparation', String.raw`const lead = $json;
 const language = lead.detected_language;
 const matchCount = lead.compatible_property_ids.length;
@@ -373,8 +464,8 @@ const parsed = JSON.parse(fs.readFileSync(file, 'utf8'));
 if (!parsed.name.endsWith('v2')) throw new Error('Workflow name was not updated');
 const normaliseCode = getNode('Normalise intake').parameters.jsCode;
 if (!normaliseCode.includes('replace(/\\s+/g')) throw new Error('Normalise intake regex escapes were not preserved');
+const controlledCode = getNode('Controlled catalogue matching').parameters.jsCode;
+if (!controlledCode.includes('replace(/\\s+/g')) throw new Error('Controlled catalogue matching regex escapes were not preserved');
+if (!controlledCode.includes('Port de S\\u00f3ller')) throw new Error('Controlled catalogue matching code was not written');
 if (!getNode('Multilingual structured lead extraction').parameters.jsCode.includes('vista al mar')) throw new Error('Feature extraction code was not written');
 console.log(`Created ${parsed.name} with ${parsed.nodes.length} nodes.`);
-
-
-
