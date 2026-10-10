@@ -1,52 +1,75 @@
-﻿# PropLead ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â Ironhack Capstone Round 2
+# PropLead AI — Ironhack Capstone Round 2
 
 **Consultant:** Carlos Felipe Valencia  
-**Scenario:** Chleo Realty Mallorca, a micro real estate agency with 1ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã¢â‚¬Å“9 employees
+**Scenario:** Chleo Realty Mallorca, a micro real-estate agency with 1–9 employees
 **Decision after Round 1:** KEEP  
 **Primary use case:** Multilingual lead qualification and property matching
 
 ## Round 2 objective
 
-Upgrade the transparent Round 1 proof of concept into a reliable MVP that normalises one multilingual enquiry, creates a structured lead, identifies missing information and calculates a transparent score. Property matching runs only after qualification, and every single-language draft stops for mandatory human approval.
+Round 2 keeps the same capstone use case but narrows the scope to a controlled multilingual lead workflow, deterministic catalogue matching and mandatory human approval. The project documents the synthetic dataset, the review-gated browser MVP, the importable n8n POC and the final LangSmith hybrid-v2 evaluation.
 
-## Smallest MVP
+## Final submission status
 
-One free-text enquiry enters the system. The MVP:
+- The public browser MVP is deployed at <https://proplead-ai-round2-mvp.vercel.app/>.
+- The browser MVP is deterministic, catalogue-bound and requires human review before any response is sent.
+- The final n8n POC is importable as `n8n/proplead_round2_poc.json` and contains 8 nodes including the Manual Trigger.
+- The final hosted LangSmith experiment is `structured_extractor_v2-d2454c34` with 18/18 successful runs.
+- Final hosted metrics: matching 100%, escalation 100%, human-review gate 100%, language 100%, explicit-field accuracy 93.0556% and no-critical-fabrication 94.4444%.
+- The current documentation promotes `hybrid_policy_v2` as the evaluation candidate while keeping mandatory human review.
+- The final presentation package is complete: [content](presentation/final_presentation_content.md), [runbook](presentation/demo_runbook.md), [PowerPoint](presentation/PropLead_AI_Final_Presentation.pptx).
+- The demo recording is still pending and no public recording URL is documented yet.
+- The final pitch rehearsal is still pending.
+- Synthetic data is documented throughout the repository, and no response is sent automatically.
 
-1. Identifies English, German or Spanish.
-2. Extracts only explicitly stated buyer requirements.
-3. Keeps unknown values empty.
-4. Calculates a deterministic readiness score.
-5. Uses confidence and ambiguity flags to route edge cases to review.
-6. Drafts an agent-approved clarification question when critical information is missing.
-7. Matches up to three current, available properties from an authorised catalogue.
-8. Drafts the complete response in the buyer's language.
-9. Stops at an agent approval gate.
+## Key deliverables
 
-## Current status
+- [Use case definition](use_case_definition.md)
+- [POC documentation](poc_documentation.md)
+- [MVP documentation](mvp_documentation.md)
+- [LangSmith evaluation](evaluation/langsmith.md)
+- [ROI and risk assessment](roi_risk_assessment.md)
+- [EU AI Act compliance draft](eu_ai_act_compliance.md)
+- [GDPR documentation](gdpr_documentation.md)
+- [Strategic plan](strategic_plan.md)
+- [Round 2 project plan](round2_project_plan.md)
+- [Final presentation content](presentation/final_presentation_content.md)
+- [Demo runbook](presentation/demo_runbook.md)
+- [Round 1 evidence index](round1/README.md)
 
-- Round 1 decision documented as KEEP.
-- Round 2 use-case definition completed.
-- MVP architecture and data contract drafted.
-- The browser MVP is implemented.
-- The deployed public MVP is available at https://proplead-ai-round2-mvp.vercel.app/.
-- The seven-node n8n workflow was imported and executed successfully.
-- The 18-case multilingual dataset was created and validated.
-- Both LangSmith experiments were executed.
-- The structured OpenAI experiment achieved 100% language accuracy, 100% mandatory human-review compliance, 94.4% no-critical-fabrication performance, 92.4% explicit-field accuracy and 61.1% escalation accuracy.
-- The final hosted structured_extractor_v2 experiment achieved 100% matching and remains review-gated as the final MVP evaluation candidate.
-- Current improvement priorities are unseen-query property matching and deterministic escalation.
-- Synthetic data is documented, and no response is sent without human approval.
-- Round 1 peer feedback (4.00 / 5.00) translated into scope, controls and regression criteria.
-- Round 1 evidence index: [round1/README.md](round1/README.md).
+## Evaluation snapshot
 
-## Important implementation boundary
+### Deterministic browser baseline
 
-The Round 1 n8n workflow and browser demo remain the validated baseline. The hybrid structured-extraction path has been fully evaluated in LangSmith, but every generated response still waits for mandatory human approval.
+The browser MVP and deterministic catalogue baseline achieve the documented synthetic benchmark on the current dataset:
 
-The project uses synthetic data only for evaluation and documentation purposes, and every generated response waits for human approval before being sent.
+- Explicit-field accuracy: 100%
+- Language accuracy: 100%
+- Exact expected matching: 100%
+- Escalation accuracy: 100%
+- Human-review gate: 100%
 
-PropLead is developed independently. Code, tests, architecture and documentation from unrelated Ironhack labs or repositories are not part of this capstone and will not be reused or reported as PropLead work.
+### Final hosted LangSmith hybrid v2
+
+The final hosted run is recorded in [`evaluation/langsmith.md`](evaluation/langsmith.md):
+
+- Experiment: `structured_extractor_v2-d2454c34`
+- Runs: 18/18 successful
+- Matching correctness: 100%
+- Escalation correctness: 100%
+- Human-review gate: 100%
+- Language correctness: 100%
+- Explicit-field accuracy: 93.0556%
+- No-critical-fabrication: 94.4444%
+- Average latency: 1.5378 seconds
+- Total tokens: 7,753
+- Total cost: USD 0.01120725
+
+## Implementation boundary
+
+The public browser MVP, the n8n proof of concept and the hosted LangSmith evaluation are separate components. The browser MVP is deterministic. The n8n workflow demonstrates an operational review-gated pipeline. The LangSmith run evaluates the OpenAI-backed hybrid extractor separately.
+
+The project uses synthetic data for development, evaluation and presentation. Real customer messages, private credentials and automatic outbound messaging are out of scope for this repository snapshot.
 
 ## Folder structure
 
@@ -55,7 +78,7 @@ architecture/               MVP architecture and lead schema
 data/                       Fictional Round 2 property catalogue with availability metadata
 evaluation/                 LangSmith plan and synthetic dataset
 feedback/                   Round 1 decision and peer-feedback response
-round1/                    Round 1 evidence index
+round1/                     Round 1 evidence index
 mvp/                        Working offline agent-review MVP
 n8n/                        Importable Round 2 POC and instructions
 poc/                        POC upgrade plan
@@ -67,21 +90,18 @@ pf-check-in-day-1.md        Daily progress record
 pf-check-in-day-2.md        MVP implementation progress record
 ```
 
-## Dataset validation
+## Validation
 
-Run:
+Run the core validators and tests with:
 
 ```bash
 python evaluation/validate_dataset.py
-```
-
-The validator checks JSON syntax, required reference fields, catalogue IDs and expected hard-filter compatibility.
-
-Run the MVP test suite and baseline:
-
-```bash
 node --test tests/test_core.js
 node evaluation/run_baseline.js
 ```
 
-Open `mvp/index.html` for the visual demo.
+## Notes
+
+- The Round 1 evidence archive is in `round1/README.md`.
+- The public MVP URL is included above for the final submission.
+- No automatic customer response is sent from any public-facing artifact.

@@ -8,7 +8,7 @@ Status: the final hosted hybrid structured-extraction evaluation passed, the reg
 |---|---|---|---|
 | REG-01 | Spanish enquiry produces a Spanish greeting but an English body | WhatsApp | Fail the draft; regenerate or escalate until greeting, body and closing are Spanish |
 | REG-02 | German enquiry has location and bedrooms but no budget | Email | Set budget to null, mark `needs_information`, ask for budget and block matching |
-| REG-03 | English buyer says â€œsomething nice near the seaâ€ without type or bedroom count | Social | Do not infer apartment, villa or bedroom count; request clarification |
+| REG-03 | English buyer says “something nice near the sea” without type or bedroom count | Social | Do not infer apartment, villa or bedroom count; request clarification |
 | REG-04 | Property-portal payload contains message text plus duplicated contact metadata | Property portal | Preserve the original message, normalise metadata once and extract only message-supported preferences |
 | REG-05 | A property otherwise matches but has status `unavailable` | Web form | Return no unavailable property; use zero-match or another valid listing and require review |
 | REG-06 | A buyer gives two conflicting budgets in one message | Manual | Add an ambiguity flag, do not select a budget, block matching and route to review |

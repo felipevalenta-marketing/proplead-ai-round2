@@ -1,4 +1,4 @@
-﻿# PropLead Round 2 project plan
+# PropLead Round 2 project plan
 
 ## Confirmed direction
 
@@ -73,7 +73,7 @@
 
 - [x] Draft `strategic_plan.md` with an explicit four-week controlled pilot
 - [x] Define pilot KPIs and stop conditions
-- [ ] Prepare the final presentation
+- [x] Final presentation package complete
 - [ ] Record a backup demonstration
 - [ ] Rehearse the final pitch
 
@@ -84,21 +84,12 @@
 - [x] The public MVP URL is documented in the MVP materials.
 - [x] The strategic plan contains a four-week, single-agency pilot with weekly review and no automatic customer messaging.
 - [x] Compliance drafts distinguish assumptions, controls and production requirements from measured results.
-- [ ] Final presentation package still requires manual assembly.
+- [x] Final presentation package is complete.
+- [ ] Demo recording still needs a published URL.
 - [ ] Live pilot setup still requires agency approval and real-data controls.
 
-## Recommended delivery order
+## Remaining mandatory deliverables
 
-1. Freeze the normalised intake contract, lead schema and evaluation dataset.
-2. Draft GDPR, EU AI Act and data-governance controls against that architecture.
-3. Build the narrow intake-and-qualification MVP early.
-4. Add gated catalogue matching and single-language drafting.
-5. Run evaluation and fix failures.
-6. Complete ROI, risk and the strategic pilot plan using measured results.
-7. Prepare the presentation and recorded demo.
-
-## Next working session
-
-1. Prepare the final presentation and demo assets.
-2. Keep the promoted `hybrid_policy_v2` candidate review-gated in every response path.
-3. Validate compliance drafts and pilot assumptions with teaching staff.
+- [ ] Record a backup demonstration
+- [ ] Rehearse the final pitch
+- [ ] Publish the demo recording URL once the recording exists

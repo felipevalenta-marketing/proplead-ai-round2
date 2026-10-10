@@ -1,12 +1,12 @@
-﻿# PropLead MVP documentation
+# PropLead MVP documentation
 
 ## MVP statement
 
-PropLead is an offline browser MVP for a small Mallorca real-estate agency. It converts one English, German or Spanish enquiry into a structured lead, exposes missing or risky information, calculates a transparent score, gates property matching and prepares a same-language draft for mandatory human review. The final hybrid structured-extraction evaluation is complete, and `hybrid_policy_v2` is the promoted candidate for review-gated use.
+The browser MVP converts one English, German or Spanish enquiry into a structured lead, exposes missing or risky information, calculates a transparent score, gates property matching and prepares a same-language draft for mandatory human review. The deterministic browser MVP is the working public baseline; the hosted hybrid structured-extraction path was evaluated separately in LangSmith.
 
 ## How to run
 
-Open `mvp/index.html` in Chrome, Edge or Firefox. No installation, API key or internet connection is required. The deployed public MVP is available at https://proplead-ai-round2-mvp.vercel.app/.
+Open `mvp/index.html` in Chrome, Edge or Firefox. No installation, API key or internet connection is required. The deployed public MVP is available at <https://proplead-ai-round2-mvp.vercel.app/>.
 
 For automated validation:
 
@@ -60,16 +60,38 @@ A property can be returned only when:
 
 ## Evaluation evidence
 
+### Deterministic baseline on the current synthetic dataset
+
+These figures describe the browser MVP and deterministic catalogue baseline only.
+
 | Evidence | Result |
 |---|---:|
 | Multilingual synthetic cases | 18 |
 | Languages | 3 |
 | Automated tests | all current tests passing |
-| Explicit-field accuracy on current dataset | 100% |
-| Language accuracy on current dataset | 100% |
-| Exact expected matching on current dataset | 100% |
-| Escalation accuracy on current dataset | 100% |
+| Explicit-field accuracy | 100% |
+| Language accuracy | 100% |
+| Exact expected matching | 100% |
+| Escalation accuracy | 100% |
 | Human-review gate | 100% |
+
+### Final hosted LangSmith hybrid v2 results
+
+The hosted hybrid extractor was evaluated separately and recorded in `evaluation/langsmith.md`.
+
+| Evidence | Result |
+|---|---:|
+| Experiment | `structured_extractor_v2-d2454c34` |
+| Runs | 18/18 successful |
+| Matching correctness | 100% |
+| Escalation correctness | 100% |
+| Human-review gate | 100% |
+| Language correctness | 100% |
+| Explicit-field accuracy | 93.0556% |
+| No-critical-fabrication | 94.4444% |
+| Average latency | 1.5378 seconds |
+| Total tokens | 7,753 |
+| Total cost | USD 0.01120725 |
 
 These figures describe the documented synthetic benchmark only. They do not prove live accuracy or business impact.
 

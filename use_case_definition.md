@@ -2,27 +2,26 @@
 
 ## 1. Round 1 to Round 2 evolution
 
-Round 1 tested the business logic with a transparent rules-based n8n workflow and a standalone browser demo. The baseline detects the language, extracts common fields from controlled examples, calculates a readiness score, matches a synthetic property catalogue and routes the result to an agent review queue.
+Round 1 tested the business logic with a transparent rules-based n8n workflow and a standalone browser demo. The baseline detected the language, extracted common fields from controlled examples, calculated a readiness score, matched a synthetic property catalogue and routed the result to an agent review queue.
 
-The teaching-staff presentation resulted in a **KEEP** decision. Peer feedback supported the concept while identifying risks around channel definition, missing data, language consistency, synthetic evidence and unsafe matching. Round 2 therefore preserves the industry and use case but makes intake and qualification the core proof; matching becomes a gated secondary capability.
+The teaching-staff presentation resulted in a **KEEP** decision. Peer feedback supported the concept while identifying risks around channel definition, missing data, language consistency, synthetic evidence and unsafe matching. Round 2 preserved the industry and use case but made intake and qualification the core proof; matching became a gated secondary capability.
 
-Round 2 will evolve the baseline in four areas:
+Round 2 evolved the baseline in four areas:
 
-1. Replace rule-based extraction with structured LLM extraction after the deterministic baseline is retained for comparison.
-2. Expand evaluation from five crafted cases to a multilingual dataset with systematic evaluators.
-3. Document ROI, risk, GDPR and EU AI Act implications before any live pilot.
-4. Normalise simulated channel inputs and stop incomplete records at a missing-information gate.
-5. Deliver a working MVP and recorded demonstration with a mandatory human approval gate.
+1. The project retained the deterministic baseline for comparison and added structured LLM extraction in the evaluated hybrid path.
+2. Evaluation expanded from five crafted cases to a multilingual dataset with systematic evaluators.
+3. ROI, risk, GDPR and EU AI Act implications were documented before any live pilot.
+4. Simulated channel inputs were normalised and incomplete records were stopped at a missing-information gate.
 
 ## 2. Client scenario
 
-Chleo Realty Mallorca represents a microagency with 1–9 employees. The working discovery profile assumes five employees, approximately 40 active listings and 60 buyer enquiries per month through WhatsApp, email and web forms.
+Chleo Realty Mallorca is a microagency with 1–9 employees. The working discovery profile assumes five employees, approximately 40 active listings and 60 buyer enquiries per month through WhatsApp, email and web forms.
 
 These internal figures remain synthetic until the agency provides permissioned operational data. No real Chleo Realty customer or property data is used in the capstone.
 
 ### Dataset decision
 
-On 29 September 2026, teaching staff confirmed that a well-documented synthetic dataset is sufficient for the capstone. PropLead will therefore use realistic synthetic buyer enquiries and a fictional property catalogue for development, LangSmith evaluation and demonstration. Every dataset artifact must clearly state its synthetic origin, intended coverage and limitations. Passing the synthetic evaluation will demonstrate controlled functional performance, not real-world accuracy, conversion impact or production readiness.
+On 29 September 2026, teaching staff confirmed that a well-documented synthetic dataset is sufficient for the capstone. PropLead therefore uses realistic synthetic buyer enquiries and a fictional property catalogue for development, LangSmith evaluation and demonstration. Every dataset artifact clearly states its synthetic origin, intended coverage and limitations. Passing the synthetic evaluation demonstrates controlled functional performance, not real-world accuracy, conversion impact or production readiness.
 
 ## 3. Business problem
 
@@ -30,7 +29,7 @@ Buyer enquiries arrive as unstructured messages in English, German and Spanish. 
 
 ## 4. Primary user
 
-The primary user is a sales agent in a Mallorca real estate microagency. The agent needs one clear review screen with a fast summary of the buyer's stated requirements, visible missing information, relevant listings, supporting evidence and a draft response or clarification question that can be approved, edited or rejected.
+The primary user is a sales agent in a Mallorca real-estate microagency. The agent needs one clear review screen with a fast summary of the buyer's stated requirements, visible missing information, relevant listings, supporting evidence and a draft response or clarification question that can be approved, edited or rejected.
 
 ## 5. Job to be done
 
@@ -149,4 +148,4 @@ The MVP proves one end-to-end path:
 - Agent-reported usefulness
 - Agent task-completion rate and usability issues
 
-The MVP will not claim conversion, revenue improvement or live classification accuracy until a controlled pilot with anonymised or consented real enquiries and current catalogue constraints produces evidence.
+The MVP does not claim conversion, revenue improvement or live classification accuracy until a controlled pilot with anonymised or consented real enquiries and current catalogue constraints produces evidence.
